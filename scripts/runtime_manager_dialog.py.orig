@@ -843,7 +843,11 @@ class MyFrame(rtmgr.MyFrame):
 
 	def param_default_value_get(self, prm, name, def_ret=None):
 		return next( (var.get('v') for var in prm.get('vars') if var.get('name') == name ), def_ret) \
+<<<<<<< HEAD
+                        if prm else def_ret
+=======
 			if prm else def_ret
+>>>>>>> origin/resolve_conflict
 
 	def update_depend_enable(self, pdic, gdic, prm):
 		for var in prm.get('vars', []):
@@ -2984,14 +2988,22 @@ def bak_stk_push(dic, key):
 def bak_stk_pop(dic, key):
 	k = key + '_bak_str'
 	stk = dic.get(k, [])
+<<<<<<< HEAD
+        if len(stk) > 0:
+=======
 	if len(stk) > 0:
+>>>>>>> origin/resolve_conflict
 		dic[key] = stk.pop()
 	else:
 		del dic[key]
 
 def bak_stk_set(dic, key, v):
 	bak_str_push(dic, key)
+<<<<<<< HEAD
+        dic[key] = v
+=======
 	dic[key] = v
+>>>>>>> origin/resolve_conflict
 
 
 def get_top(lst, def_ret=None):
