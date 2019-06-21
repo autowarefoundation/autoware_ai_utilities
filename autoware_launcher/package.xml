@@ -20,6 +20,7 @@
   <exec_depend>python-rospkg</exec_depend>
   <test_depend>rostest</test_depend>
   <test_depend>python-nose</test_depend>
+  <test_depend>python-requests</test_depend>
 
   <export></export>
 
