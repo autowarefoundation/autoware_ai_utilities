@@ -87,7 +87,24 @@ subs :
         cmd  : roslaunch ekf_localizer ekf_localizer.launch
         param : ekf_localizer_param
         gui  :
-          dialog_height : 600
+          dialog_height : 700
+          use_pose_with_covariance:
+             flags : [ nl ]
+          pose_stddev_x:
+             flags : [ nl ]
+             depend : use_pose_with_covariance
+             depend_bool : 'lambda v : v == 0'
+             flags : [ nl ]
+          pose_stddev_y:
+             flags : [ nl ]
+             depend : use_pose_with_covariance
+             depend_bool : 'lambda v : v == 0'
+             flags : [ nl ]
+          pose_stddev_yaw:
+             flags : [ nl ]
+             depend : use_pose_with_covariance
+             depend_bool : 'lambda v : v == 0'
+             flags : [ nl ]
     - name : twist_generator
       desc : twist_generator
       subs :
@@ -5882,6 +5899,24 @@ params :
       cmd_param :
         dash      : ''
         delim     : ':='
+    - name      : input_pose_name
+      desc      : input_pose_name (geometry_msgs/PoseStamped)
+      label     : input_pose_name
+      v         : /ndt_pose
+      kind  : topic
+      topic_type : geometry_msgs/PoseStamped
+      cmd_param :
+        dash      : ''
+        delim     : ':='
+    - name      : input_pose_with_cov_name
+      desc      : input_pose_with_cov_name (geometry_msgs/PoseWithCovarianceStamped)
+      label     : input_pose_with_cov_name
+      v         : /ndt_pose_with_covariance
+      kind  : topic
+      topic_type : geometry_msgs/PoseWithCovarianceStamped
+      cmd_param :
+        dash      : ''
+        delim     : ':='
     - name  : pose_additional_delay
       desc  : delay time added to pose delay
       label : pose additional delay [s]
@@ -5942,6 +5977,15 @@ params :
       min   : 0.00
       max   : 0.5
       v     : 0.025
+      cmd_param :
+        dash      : ''
+        delim     : ':='
+    - name      : input_twist_name
+      desc      : input_twist_name (geometry_msgs/TwistStamped)
+      label     : input_twist_name
+      v         : /can_twist
+      kind  : topic
+      topic_type : geometry_msgs/TwistStamped
       cmd_param :
         dash      : ''
         delim     : ':='
