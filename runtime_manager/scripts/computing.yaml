@@ -1877,15 +1877,6 @@ params :
       cmd_param :
         dash        : ''
         delim       : ':='
-    - name  : steering_gear_ratio
-      desc  : steering_gear_ratio
-      label : steering gear ratio [-]
-      min   : 0.0
-      max   : 100.0
-      v     : 20.0
-      cmd_param :
-        dash        : ''
-        delim       : ':='
   - name  : astar_avoid_param
     vars  :
     - name  : enable_avoidance
@@ -6042,15 +6033,6 @@ params :
       min   : 0.1
       max   : 10.0
       v     : 2.9
-      cmd_param :
-        dash      : ''
-        delim     : ':='
-    - name  : steering_gear_ratio
-      desc  : tire to handle angle gear ratio
-      label : steering_gear_ratio
-      min   : 0.1
-      max   : 50.0
-      v     : 13.5
       cmd_param :
         dash      : ''
         delim     : ':='
