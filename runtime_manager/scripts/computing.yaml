@@ -2184,7 +2184,7 @@ params :
       label   : 'lateral_accel_limit :'
       min   : 0
       max   : 5.0
-      v         : 0.8
+      v         : 5.0
     - name    : lowpass_gain_linear_x
       desc    : lowpass_gain_linear_x  desc sample
       label   : 'lowpass_gain_linear_x :'
