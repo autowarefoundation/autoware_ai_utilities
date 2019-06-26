@@ -1,0 +1,5 @@
+<launch>
+
+  <node name="run" pkg="autoware_startup_scripts" type="run" />
+
+</launch>
