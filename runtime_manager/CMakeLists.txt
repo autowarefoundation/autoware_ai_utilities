@@ -26,6 +26,10 @@ install(PROGRAMS
         scripts/gazebo.sh
         scripts/mti300.sh
         scripts/vg440.sh
+    	scripts/cleanup
+    	scripts/run
+    	scripts/run_proc_manager
+    	scripts/subnet_chk.py
         DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/scripts)
 
 install(FILES
@@ -98,4 +102,7 @@ install(FILES
         #DESTINATION share/${PROJECT_NAME}/launch_files
         )
 
+install(DIRECTORY launch/
+        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
+        PATTERN ".svn" EXCLUDE)
 
