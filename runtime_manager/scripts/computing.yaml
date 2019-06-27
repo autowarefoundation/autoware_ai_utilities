@@ -1600,47 +1600,47 @@ params :
       - Waypoint
       - Dialog
       descs :
-      - Waypoint desc sample
-      - Dialog desc sample
-      v     : 1
+      - use velocity on waypoints
+      - use constant velocity
+      v     : 0
     - name  : velocity
-      desc  : velocity desc sample
+      desc  : velocity in dialog mode
       label : Velocity
       min   : 0
       max   : 60
       v     : 5.0
     - name  : lookahead_distance
-      desc  : lookahead_distance desc sample
+      desc  : lookahead distance in dialog mode
       label : Lookahead Distance
       min   : 0
       max   : 30
       v     : 4.0
     - name  : lookahead_ratio
-      desc  : lookahead_ratio desc sample
+      desc  : velocity proportional coefficient for lookahead distance in waypoint mode
       label : lookahead_ratio
       min   : 0.0
       max   : 5.0
       v     : 2.0
     - name  : minimum_lookahead_distance
-      desc  : minimum_lookahead_distance desc sample
+      desc  : minimum lookahead distance in waypoint mode
       label : minimum_lookahead_distance
       min   : 0.0
       max   : 20.0
       v     : 6.0
     - name  : displacement_threshold
-      desc  : displacement_threshold desc sample
+      desc  : displacement_threshold
       label : displacement_threshold
       min   : 0
       max   : 1.0
       v     : 0.0
     - name  : relative_angle_threshold
-      desc  : relative_angle_threshold desc sample
+      desc  : relative_angle_threshold
       label : relative_angle_threshold
       min   : 0
       max   : 90
       v     : 0
     - name    : is_linear_interpolation
-      desc    : linear_interpolate_mode desc sample
+      desc    : use linear interpolation when calculate target waypoint
       label   : 'Linear Interpolation'
       kind    : checkbox
       v       : True
@@ -1648,10 +1648,10 @@ params :
         dash        : ''
         delim       : ':='
     - name    : publishes_for_steering_robot
-      desc    : linear_interpolate_mode desc sample
+      desc    : publish ctrl_cmd
       label   : 'Publishes topic for steering robot'
       kind    : checkbox
-      v       : False
+      v       : True
       cmd_param :
         dash        : ''
         delim       : ':='
