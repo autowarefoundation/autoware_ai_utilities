@@ -3830,7 +3830,7 @@ params :
       descs : When you save the velocity in each waypoints, Please check if /current_velocity is publishing
       label : Save /current_velocity
       kind    : checkbox
-      v       : False
+      v       : True
       cmd_param :
         dash        : ''
         delim       : ':='
