@@ -1,5 +1,5 @@
 <launch>
 
-  <node name="run" pkg="autoware_startup_scripts" type="run" />
+  <node name="run" pkg="runtime_manager" type="run" />
 
 </launch>
