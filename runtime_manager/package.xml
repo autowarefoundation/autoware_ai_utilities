@@ -21,6 +21,7 @@
   <run_depend>velodyne</run_depend>
   <run_depend>uvc_camera</run_depend>
   <run_depend>nmea_navsat_driver</run_depend>
+  <run_depend>python-psutil</run_depend>
   <export>
   </export>
 </package>
