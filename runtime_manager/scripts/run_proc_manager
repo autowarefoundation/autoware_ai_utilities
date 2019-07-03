@@ -7,7 +7,7 @@ fi
 
 CURDIR=$(readlink -f  $(dirname $0))
 CLEANUP_SCRIPT=$CURDIR/cleanup
-PROC_MANAGER=$CURDIR/../../../runtime_manager/lib/runtime_manager/proc_manager.py
+PROC_MANAGER=$CURDIR/../../../lib/runtime_manager/proc_manager.py
 
 $CLEANUP_SCRIPT
 exec python $PROC_MANAGER
