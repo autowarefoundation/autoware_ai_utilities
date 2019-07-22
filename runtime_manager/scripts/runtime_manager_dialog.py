@@ -2114,10 +2114,10 @@ class MyFrame(rtmgr.MyFrame):
 		return [ self.obj_get(pf + key) for pf in pfs if self.obj_get(pf + key) ]
 
 	def name_get(self, obj):
-		return next( (nm for nm in dir(self) if getattr(self, nm) is obj), None)
+		return next( (nm for nm in self.__dict__ if getattr(self, nm) is obj), None)
 
 	def name_get_cond(self, obj, cond=(lambda s : True), def_ret=None):
-		return next( (nm for nm in dir(self) if cond(nm) and getattr(self, nm) is obj), def_ret)
+		return next( (nm for nm in self.__dict__ if cond(nm) and getattr(self, nm) is obj), None)
 
 	def val_get(self, name):
 		obj = self.obj_get(name)
