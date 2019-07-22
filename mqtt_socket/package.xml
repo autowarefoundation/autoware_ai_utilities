@@ -1,29 +1,20 @@
 <?xml version="1.0"?>
-<package>
-    <name>mqtt_socket</name>
-    <version>1.11.0</version>
-    <description>The mqtt_socket package</description>
-    <maintainer email="yuki.iida@tier4.jp">yuki-iida</maintainer>
-    <license>Apache 2</license>
-    <buildtool_depend>catkin</buildtool_depend>
-    <buildtool_depend>autoware_build_flags</buildtool_depend>
+<package format="2">
+  <name>mqtt_socket</name>
+  <version>1.12.0</version>
+  <description>The mqtt_socket package</description>
+  <maintainer email="yuki.iida@tier4.jp">yuki-iida</maintainer>
+  <license>Apache 2</license>
 
-    <build_depend>roscpp</build_depend>
-    <build_depend>std_msgs</build_depend>
-    <build_depend>autoware_can_msgs</build_depend>
-    <build_depend>autoware_msgs</build_depend>
-    <build_depend>tablet_socket_msgs</build_depend>
-    <build_depend>roslib</build_depend>
-    <build_depend>yaml-cpp</build_depend>
-    <build_depend>mosquitto-dev</build_depend>
+  <buildtool_depend>autoware_build_flags</buildtool_depend>
+  <buildtool_depend>catkin</buildtool_depend>
 
-    <run_depend>roscpp</run_depend>
-    <run_depend>std_msgs</run_depend>
-    <run_depend>autoware_can_msgs</run_depend>
-    <run_depend>autoware_msgs</run_depend>
-    <run_depend>roslib</run_depend>
-    <run_depend>yaml-cpp</run_depend>
-    <run_depend>tablet_socket_msgs</run_depend>
-    <run_depend>mosquitto-dev</run_depend>
-
+  <depend>autoware_can_msgs</depend>
+  <depend>autoware_msgs</depend>
+  <depend>mosquitto-dev</depend>
+  <depend>roscpp</depend>
+  <depend>roslib</depend>
+  <depend>std_msgs</depend>
+  <depend>tablet_socket_msgs</depend>
+  <depend>yaml-cpp</depend>
 </package>

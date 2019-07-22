@@ -1,27 +1,21 @@
 <?xml version="1.0"?>
-<package>
+<package format="2">
   <name>runtime_manager</name>
-  <version>1.11.0</version>
+  <version>1.12.0</version>
   <description>The runtime_manager package</description>
   <maintainer email="kondoh@axe-inc.co.jp">Masao KONDOH</maintainer>
   <license>Apache 2</license>
+
   <buildtool_depend>catkin</buildtool_depend>
 
-  <build_depend>rospy</build_depend>
-  <build_depend>std_msgs</build_depend>
-  <build_depend>autoware_msgs</build_depend>
-  <build_depend>autoware_config_msgs</build_depend>
-  <build_depend>tablet_socket_msgs</build_depend>
+  <depend>autoware_config_msgs</depend>
+  <depend>autoware_msgs</depend>
+  <depend>rospy</depend>
+  <depend>std_msgs</depend>
+  <depend>tablet_socket_msgs</depend>
 
-  <run_depend>rospy</run_depend>
-  <run_depend>std_msgs</run_depend>
-  <run_depend>autoware_msgs</run_depend>
-  <run_depend>autoware_config_msgs</run_depend>
-  <run_depend>tablet_socket_msgs</run_depend>
-  <run_depend>velodyne</run_depend>
-  <run_depend>uvc_camera</run_depend>
-  <run_depend>nmea_navsat_driver</run_depend>
-  <run_depend>python-psutil</run_depend>
-  <export>
-  </export>
+  <exec_depend>nmea_navsat_driver</exec_depend>
+  <exec_depend>python-psutil</exec_depend>
+  <exec_depend>uvc_camera</exec_depend>
+  <exec_depend>velodyne</exec_depend>
 </package>

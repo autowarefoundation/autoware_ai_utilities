@@ -4,7 +4,6 @@ project(sound_player)
 find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
-  message_generation
 )
 find_package(sound_play REQUIRED)
 
