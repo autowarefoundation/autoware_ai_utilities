@@ -1,18 +1,14 @@
 <?xml version="1.0"?>
-<package>
+<package format="2">
   <name>sound_player</name>
-  <version>1.11.0</version>
+  <version>1.12.0</version>
   <description>The sound_player package</description>
   <maintainer email="kondoh@axe-inc.co.jp">Masao KONDOH</maintainer>
   <license>Apache 2</license>
+
   <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>message_generation</build_depend>
-  <build_depend>rospy</build_depend>
-  <build_depend>std_msgs</build_depend>
-  <build_depend>sound_play</build_depend>
-  <run_depend>rospy</run_depend>
-  <run_depend>std_msgs</run_depend>
-  <run_depend>sound_play</run_depend>
-  <export>
-  </export>
+
+  <depend>rospy</depend>
+  <depend>sound_play</depend>
+  <depend>std_msgs</depend>
 </package>
