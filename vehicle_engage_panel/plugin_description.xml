@@ -1,0 +1,9 @@
+<library path="lib/libvehicle_engage_panel">
+    <class name="autoware_rviz_debug/VehicleEngagePanel"
+           type="autoware_rviz_debug::VehicleEngagePanel"
+           base_class_type="rviz::Panel">
+        <description>
+          A panel widget to send engage/disengage via vehicle_interface which subscribes to /vehicle/engage topic.
+        </description>
+    </class>
+</library>
