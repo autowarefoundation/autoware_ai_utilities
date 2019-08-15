@@ -6071,6 +6071,14 @@ params :
       cmd_param :
         dash      : ''
         delim     : ':='
+    - name      : enable_steering_offset_estimate
+      desc      : enable steering offset estimation with /estimate_twist by recursive least square method
+      label     : enable_steering_offset_estimate
+      kind      : checkbox
+      v         : false
+      cmd_param :
+        dash      : ''
+        delim     : ':='
     - name  : wheelbase
       desc  : wheelbase of vehicle
       label : wheelbase
