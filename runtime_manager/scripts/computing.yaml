@@ -1646,6 +1646,14 @@ params :
       cmd_param :
         dash        : ''
         delim       : ':='
+    - name    : add_virtual_end_waypoints
+      desc    : add virtual end waypoints to reach end waypoint
+      label   : 'Add virtual end waypoints'
+      kind    : checkbox
+      v       : False
+      cmd_param :
+        dash        : ''
+        delim       : ':='
 
   - name  : mpc_follower
     vars  :
