@@ -631,17 +631,70 @@ subs :
          cmd  : roslaunch waypoint_follower twist_filter.launch
          param: twist_filter
        - name : wf_simulator
-         desc : wf_simulator desc sample
+         desc : waypoint follower simulator
          cmd  : roslaunch waypoint_follower wf_simulator.launch
          param: wf_simulator
          gui  :
+           dialog_width  : 500
+           dialog_height : 600
            initialize_source :
              flags : [ nl ]
+           add_measurement_noise :
+             flags : [ nl ]
+           vehicle_model_type :
+             flags : [ nl ]
+           simulation_frame_id :
+             flags : [ nl ]
+           lidar_frame_id :
+             flags : [ nl ]
+           vel_lim :
+             flags : [ nl ]
+             depend : vehicle_model_type
+             depend_bool : 'lambda v : v == "DELAY_TWIST" or v == "DELAY_STEER" or v == "CONST_ACCEL_TWIST"'
+           angvel_lim :
+             flags : [ nl ]
+             depend : vehicle_model_type
+             depend_bool : 'lambda v : v == "DELAY_TWIST" or v == "CONST_ACCEL_TWIST"'
            accel_rate :
              flags : [ nl ]
-           position_error :
+             depend : vehicle_model_type
+             depend_bool : 'lambda v : v == "DELAY_TWIST" or v == "CONST_ACCEL_TWIST"'
+           angvel_rate :
              flags : [ nl ]
-
+             depend : vehicle_model_type
+             depend_bool : 'lambda v : v == "DELAY_TWIST" or v == "CONST_ACCEL_TWIST"'
+           vel_time_delay :
+             flags : [ nl ]
+             depend : vehicle_model_type
+             depend_bool : 'lambda v : v == "DELAY_TWIST" or v == "DELAY_STEER"'
+           vel_time_constant :
+             flags : [ nl ]
+             depend : vehicle_model_type
+             depend_bool : 'lambda v : v == "DELAY_TWIST" or v == "DELAY_STEER"'
+           angvel_time_delay :
+             flags : [ nl ]
+             depend : vehicle_model_type
+             depend_bool : 'lambda v : v == "DELAY_TWIST"'
+           angvel_time_constant :
+             flags : [ nl ]
+             depend : vehicle_model_type
+             depend_bool : 'lambda v : v == "DELAY_TWIST"'
+           steer_lim :
+             flags : [ nl ]
+             depend : vehicle_model_type
+             depend_bool : 'lambda v : v == "DELAY_STEER"'
+           steer_rate_lim :
+             flags : [ nl ]
+             depend : vehicle_model_type
+             depend_bool : 'lambda v : v == "DELAY_STEER"'
+           steer_time_delay :
+             flags : [ nl ]
+             depend : vehicle_model_type
+             depend_bool : 'lambda v : v == "DELAY_STEER"'
+           steer_time_constant :
+             flags : [ nl ]
+             depend : vehicle_model_type
+             depend_bool : 'lambda v : v == "DELAY_STEER"'
     - name : OpenPlanner - Local planning
       desc : Local Planner for OpenPlanner
       subs :
@@ -2195,38 +2248,134 @@ params :
       label   : Initialize Source
       kind    : radio_box
       choices : ['Rviz','lidar_localizer','GNSS']
-      descs   : ['Rviz desc sample', 'lidar_localizer desc sample', 'GNSS desc sample']
+      descs   : ['use initialpose from 2D pose estimate in Rviz plugin  as an initial pose source', 'use ndt_pose as an initial pose source', 'use gnss_pose as an initial pose source']
       choices_type : str
       v       : Rviz
       cmd_param:
         dash     : ''
         delim    : ':='
+    - name    : add_measurement_noise
+      desc    : add measurement noise
+      label   : 'add_measurement_noise'
+      kind    : checkbox
+      v       : False
+      cmd_param :
+        dash        : ''
+        delim       : ':='
+    - name    : vehicle_model_type
+      desc    : vehicle model type for simulation dynamics
+      label   : 'vehicle_model_type Source :'
+      kind    : menu
+      choices : ['IDEAL_TWIST', 'CONST_ACCEL_TWIST', 'DELAY_TWIST','IDEAL_STEER', 'DELAY_STEER']
+      descs   : ['ideal twist model', 'twist model with acceleration limit', 'twist model with dead time & response delay', 'ideal steering model', 'steering model with dead time & response delay']
+      choices_type : str
+      v       : 'IDEAL_TWIST'
+      cmd_param:
+        dash     : ''
+        delim    : ':='
+    - name    : simulation_frame_id
+      desc    : simulation_frame_id
+      label   : 'tf simulation_frame_id :'
+      kind    : menu
+      choices : ['base_link', 'sim_base_link']
+      descs   : ['', '']
+      choices_type : str
+      v       : 'base_link'
+      cmd_param:
+        dash     : ''
+        delim    : ':='
+    - name    : lidar_frame_id
+      desc    : lidar_frame_id
+      label   : 'tf lidar_frame_id :'
+      kind    : menu
+      choices : ['velodyne', 'sim_lidar']
+      descs   : ['', '']
+      choices_type : str
+      v       : 'velodyne'
+      cmd_param:
+        dash     : ''
+        delim    : ':='
+    - name      : vel_lim
+      desc      :
+      label   : ' velocity limit [m/s] :'
+      v         : 30.0
+      cmd_param :
+        dash        : ''
+        delim       : ':='
+    - name      : angvel_lim
+      desc      :
+      label   : ' angular velocity limit [rad/s] :'
+      v         : 3.0
+      cmd_param :
+        dash        : ''
+        delim       : ':='
     - name      : accel_rate
       desc      :
-      label   : 'accel_rate(m/s^2) :'
+      label   : ' acceleration limit [m/ss] :'
       v         : 1.0
       cmd_param :
         dash        : ''
         delim       : ':='
-    - name      : position_error
+    - name      : angvel_rate
       desc      :
-      label   : 'position_error(m) :'
-      v         : 0.0
+      label   : ' angular acceleration limit [rad/ss] :'
+      v         : 1.0
       cmd_param :
         dash        : ''
         delim       : ':='
-    - name      : angle_error
+    - name      : vel_time_delay
       desc      :
-      label   : 'angle_error(degree) :'
-      v         : 0.0
+      label   : ' velocity time delay [s] :'
+      v         : 0.250
       cmd_param :
         dash        : ''
         delim       : ':='
-    - name      : use_ctrl_cmd
+    - name      : vel_time_constant
       desc      :
-      label   : 'use_ctrl_cmd :'
-      kind    : checkbox
-      v       : False
+      label   : ' velocity time constant [s] :'
+      v         : 0.600
+      cmd_param :
+        dash        : ''
+        delim       : ':='
+    - name      : angvel_time_delay
+      desc      :
+      label   : ' angular velocity time delay [s] :'
+      v         : 0.200
+      cmd_param :
+        dash        : ''
+        delim       : ':='
+    - name      : angvel_time_constant
+      desc      :
+      label   : ' angular velocity time constant [s] :'
+      v         : 0.400
+      cmd_param :
+        dash        : ''
+        delim       : ':='
+    - name      : steer_lim
+      desc      :
+      label   : ' steering angle limit [rad] :'
+      v         : 1.0
+      cmd_param :
+        dash        : ''
+        delim       : ':='
+    - name      : steer_rate_lim
+      desc      :
+      label   : ' steering angular velocity limit [rad/s] :'
+      v         : 0.5
+      cmd_param :
+        dash        : ''
+        delim       : ':='
+    - name      : steer_time_delay
+      desc      :
+      label   : ' steering time delay [s] :'
+      v         : 0.240
+      cmd_param :
+        dash        : ''
+        delim       : ':='
+    - name      : steer_time_constant
+      desc      :
+      label   : ' steering time constant [s] :'
+      v         : 0.27
       cmd_param :
         dash        : ''
         delim       : ':='
