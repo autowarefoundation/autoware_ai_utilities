@@ -615,7 +615,7 @@ subs :
          param: mpc_follower
          gui  :
            dialog_width  : 600
-           dialog_height : 900
+           dialog_height : 750
            show_debug_info :
              flags : [ nl ]
            qp_solver_type :
@@ -1744,9 +1744,11 @@ params :
       choices:
       - unconstraint
       - unconstraint_fast
+      - qpoases_hotstart
       descs :
       - unconstraint least square 
       - unconstraint least square (fast, but low accuracy)
+      - constraint with qpOASES hotstart
       choices_type : str
       v       : unconstraint_fast
       cmd_param :
@@ -1931,8 +1933,6 @@ params :
     - name  : vehicle_model_wheelbase
       desc  : vehicle_model_wheelbase
       label : wheelbase [m]
-      min   : 0.1
-      max   : 10.0
       v     : 2.9
       cmd_param :
         dash        : ''
@@ -1940,9 +1940,14 @@ params :
     - name  : steer_lim_deg
       desc  : steer_lim_deg
       label : steering angle limit [deg]
-      min   : 10.0
-      max   : 45.0
       v     : 35.0
+      cmd_param :
+        dash        : ''
+        delim       : ':='
+    - name  : qpoases_max_iter
+      desc  : max iteration number for qpoases convex optimization
+      label : qpoases_max_iter
+      v     : 500
       cmd_param :
         dash        : ''
         delim       : ':='
