@@ -564,6 +564,21 @@ subs :
          desc : waypoint_clicker desc sample
          cmd  : rosrun waypoint_maker waypoint_clicker
          param: waypoint_clicker
+       - name : waypoint_creator
+         desc : create waypoints from some source points
+         cmd  : roslaunch waypoint_maker waypoint_creator.launch
+         gui  :
+           interpolation_method    :
+             flags       : [ nl ]
+           source_point_topic    :
+             flags       : [ nl ]
+           delete_pose_topic    :
+             flags       : [ nl ]
+           interpolation_interval    :
+             flags       : [ nl ]
+           waypoint_velocity    :
+             flags       : [ nl ]
+         param: waypoint_creator
        - name : waypoint_velocity_visualizer
          desc : waypoint_velocity_visualizer desc sample
          cmd  : roslaunch waypoint_maker waypoint_velocity_visualizer.launch
@@ -4029,7 +4044,43 @@ params :
       path_type : save
       v         : /tmp/lane_waypoint.csv
       rosparam  : /waypoint_clicker/output_file
-
+  - name  : waypoint_creator
+    vars  :
+    - name    : interpolation_method
+      desc    : interpolation_method
+      label   : interpolation_method
+      kind    : radio_box
+      choices : ['linear','spline']
+      descs   : ['linear interpolation for input points','spline interpolation for input points']
+      choices_type : str
+      v       : spline
+      cmd_param:
+        dash     : ''
+        delim    : ':='
+    - name    : source_point_topic
+      desc    : source points topic name to generate waypoints
+      label   : 'source point topic'
+      kind    : str
+      v       : /clicked_point
+      cmd_param :
+        dash  : ''
+        delim : ':='
+    - name    : delete_pose_topic
+      desc    : pose topic name to delete source point
+      label   : 'delete pose topic'
+      kind    : str
+      v       : /move_base_simple/goal
+      cmd_param :
+        dash  : ''
+        delim : ':='
+    - name      : interpolation_interval
+      desc      : interval length for waypoints interpolation
+      label     : interpolation_interval [m]
+      v         : 1.0
+    - name      : waypoint_velocity
+      desc      : waypoint_velocity
+      label     : waypoint_velocity
+      v         : 5.0
   - name  : waypoint_loader
     topic : /config/waypoint_replanner
     msg   : ConfigWaypointReplanner
