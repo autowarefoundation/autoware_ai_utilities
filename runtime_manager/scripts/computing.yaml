@@ -652,9 +652,15 @@ subs :
          gui  :
            dialog_width  : 500
            dialog_height : 600
+           sim_pose_name :
+             flags : [ nl ]
+           sim_velocity_name :
+             flags : [ nl ]
            initialize_source :
              flags : [ nl ]
            add_measurement_noise :
+             flags : [ nl ]
+           use_waypoints_for_z_position_source :
              flags : [ nl ]
            vehicle_model_type :
              flags : [ nl ]
@@ -2264,19 +2270,28 @@ params :
   - name  : wf_simulator
     vars  :
     - name    : initialize_source
-      desc    : initialize_source desc sample
+      desc    : initial pose source for wf_simulation
       label   : Initialize Source
       kind    : radio_box
-      choices : ['Rviz','lidar_localizer','GNSS']
-      descs   : ['use initialpose from 2D pose estimate in Rviz plugin  as an initial pose source', 'use ndt_pose as an initial pose source', 'use gnss_pose as an initial pose source']
+      choices : ['RVIZ','NDT','GNSS', 'ORIGIN']
+      descs   : ['use initialpose from 2D pose estimate in Rviz plugin  as an initial pose source', 'use ndt_pose as an initial pose source', 'use gnss_pose as an initial pose source', 'set initial pose at origin']
+      choices_style: h
       choices_type : str
       v       : Rviz
       cmd_param:
         dash     : ''
         delim    : ':='
     - name    : add_measurement_noise
-      desc    : add measurement noise
+      desc    : add measurement noise for output topics
       label   : 'add_measurement_noise'
+      kind    : checkbox
+      v       : False
+      cmd_param :
+        dash        : ''
+        delim       : ':='
+    - name    : use_waypoints_for_z_position_source
+      desc    : subscribe waypoints and closest index for z position source
+      label   : 'use_waypoints_for_z_position_source'
       kind    : checkbox
       v       : False
       cmd_param :
@@ -2312,6 +2327,22 @@ params :
       descs   : ['', '']
       choices_type : str
       v       : 'velodyne'
+      cmd_param:
+        dash     : ''
+        delim    : ':='
+    - name    : sim_pose_name
+      desc    : output pose topic
+      label   : 'output pose topic :'
+      kind    : str
+      v       : 'current_pose'
+      cmd_param:
+        dash     : ''
+        delim    : ':='
+    - name    : sim_velocity_name
+      desc    : output velocity topic
+      label   : 'output velocity topic  :'
+      kind    : str
+      v       : 'current_velocity'
       cmd_param:
         dash     : ''
         delim    : ':='
