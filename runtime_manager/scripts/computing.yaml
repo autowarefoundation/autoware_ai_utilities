@@ -606,7 +606,7 @@ subs :
       subs :
        - name : pure_pursuit
          desc : pure_pursuit desc sample
-         cmd  : roslaunch waypoint_follower pure_pursuit.launch
+         cmd  : roslaunch pure_pursuit pure_pursuit.launch
          param: waypoint_follower
          gui  :
            dialog_width  : 600
@@ -626,7 +626,7 @@ subs :
            stat_topic : [ lf ]
        - name : mpc_follower
          desc : model predictive control based path following
-         cmd  : roslaunch waypoint_follower mpc_follower.launch
+         cmd  : roslaunch mpc_follower mpc_follower.launch
          param: mpc_follower
          gui  :
            dialog_width  : 600
@@ -643,11 +643,11 @@ subs :
              depend_bool : 'lambda v : v == True'
        - name : twist_filter
          desc : twist_filter desc sample
-         cmd  : roslaunch waypoint_follower twist_filter.launch
+         cmd  : roslaunch twist_filter twist_filter.launch
          param: twist_filter
        - name : wf_simulator
          desc : waypoint follower simulator
-         cmd  : roslaunch waypoint_follower wf_simulator.launch
+         cmd  : roslaunch wf_simulator wf_simulator.launch
          param: wf_simulator
          gui  :
            dialog_width  : 500
