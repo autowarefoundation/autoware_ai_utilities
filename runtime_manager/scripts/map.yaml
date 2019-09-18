@@ -32,6 +32,13 @@ buttons :
       stat_topic : [ vmap ]
       panel : self.panel_vector_map
 
+  lanelet_map :
+    run   : roslaunch map_file lanelet2_map_loader.launch
+    param : lanelet_map_loader
+    gui   :
+      stat_topic : [ vmap ]
+      panel : self.panel_lanelet_map
+
   tf :
     run    : roslaunch
     param  : tf
@@ -85,6 +92,15 @@ params :
       cmd_param :
         delim     : ''
         unpack    : ','
+        must      : True
+
+  - name  : lanelet_map_loader
+    vars  :
+    - name      : file_name
+      kind      : path
+      v         : ''
+      cmd_param :
+        delim     : 'file_name:='
         must      : True
 
   - name  : tf
