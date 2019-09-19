@@ -1,0 +1,4 @@
+<launch>
+  <node pkg="lanelet_aisan_converter" type="launch_vector_map_loader.sh" name="vector_map_loader" />
+  <test test-name="test_lanelet2aisan_converter" pkg="lanelet_aisan_converter" type="test_lanelet2aisan_converter" />
+</launch>
