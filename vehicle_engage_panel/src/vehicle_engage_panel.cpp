@@ -47,7 +47,7 @@ namespace autoware_rviz_debug
 
 VehicleEngagePanel::VehicleEngagePanel(QWidget* parent) : rviz::Panel(parent)
 {
-  engage_pub_ = nh_.advertise<std_msgs::Bool>("/vehicle/engage", 1, true);
+  engage_pub_ = nh_.advertise<std_msgs::Bool>("/vehicle/engage", 1);
   vehicle_status_sub_ = nh_.subscribe("/vehicle_status", 1, &VehicleEngagePanel::vehicleStatusCallback, this);
   // Next we lay out the "output topic" text entry field using a
   // QLabel and a QLineEdit in a QHBoxLayout.
