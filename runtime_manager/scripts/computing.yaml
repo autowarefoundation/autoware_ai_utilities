@@ -2266,6 +2266,14 @@ params :
       min   : 0
       max   : 1.0
       v         : 0.0
+    - name  : use_decision_maker
+      desc  : If you use decision_maker, please check this true.
+      label : use_decision_maker
+      kind  : checkbox
+      v     : False
+      cmd_param :
+        dash        : ''
+        delim       : ':='
 
   - name  : wf_simulator
     vars  :
@@ -2438,6 +2446,14 @@ params :
     - name  : disuse_vector_map
       desc  : If this is enabled, the state passes through the MapInit state without vectormap.
       label : disuse_vector_map
+      kind  : checkbox
+      v     : False
+      cmd_param :
+        dash        : ''
+        delim       : ':='
+    - name  : sim_mode
+      desc  : If you use simulator(e.g. wf_sim) please check this true.
+      label : sim_mode
       kind  : checkbox
       v     : False
       cmd_param :
@@ -4266,6 +4282,14 @@ params :
       min       : 0
       max       : 2
       v         : 1
+      cmd_param :
+        dash        : ''
+        delim       : ':='
+    - name  : use_decision_maker
+      desc  : If you use decision_maker, please check this true.
+      label : use_decision_maker
+      kind  : checkbox
+      v     : False
       cmd_param :
         dash        : ''
         delim       : ':='
