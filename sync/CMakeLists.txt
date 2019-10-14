@@ -34,7 +34,6 @@ catkin_package(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
-  ${autoware_msgs_INCLUDE_DIRS}
 )
 
 add_executable(sync_drivers sync_drivers.cpp)
