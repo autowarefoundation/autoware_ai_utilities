@@ -27,8 +27,6 @@ catkin_package(CATKIN_DEPENDS
 
 include_directories(
   ${catkin_INCLUDE_DIRS}
-  ${tablet_socket_msgs_INCLUDE_DIRS}
-  ${autoware_msgs_INCLUDE_DIRS}
 )
 
 add_executable(vehicle_receiver nodes/vehicle_receiver/vehicle_receiver.cpp)
@@ -41,7 +39,6 @@ add_executable(vehicle_sender nodes/vehicle_sender/vehicle_sender.cpp)
 target_link_libraries(vehicle_sender ${catkin_LIBRARIES})
 add_dependencies(vehicle_sender
   ${catkin_EXPORTED_TARGETS}
-  autoware_msgs_generate_messages_cpp
   )
 
 install(TARGETS vehicle_sender vehicle_receiver

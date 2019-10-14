@@ -38,7 +38,6 @@ set(CMAKE_CXX_FLAGS "-O3 -g -Wall ${CMAKE_CXX_FLAGS}")
 
 include_directories(
     ${catkin_INCLUDE_DIRS}
-    ${autoware_msgs_INCLUDE_DIRS}
     ${Boost_INCLUDE_DIRS}
     ${PCL_INCLUDE_DIRS}
 )
