@@ -88,6 +88,7 @@ subs :
         param : ekf_localizer_param
         gui  :
           dialog_height : 700
+          dialog_width  : 600
           use_pose_with_covariance:
              flags : [ nl ]
           pose_stddev_x:
@@ -105,6 +106,29 @@ subs :
              depend : use_pose_with_covariance
              depend_bool : 'lambda v : v == 0'
              flags : [ nl ]
+          input_pose_name:
+             depend : use_pose_with_covariance
+             depend_bool : 'lambda v : v == 0'
+          input_pose_with_cov_name:
+             depend : use_pose_with_covariance
+             depend_bool : 'lambda v : v == 1'
+          use_twist_with_covariance:
+             flags : [ nl ]
+          twist_stddev_vx:
+             flags : [ nl ]
+             depend : use_twist_with_covariance
+             depend_bool : 'lambda v : v == 0'
+             flags : [ nl ]
+          twist_stddev_wz:
+             flags : [ nl ]
+             depend : use_twist_with_covariance
+             depend_bool : 'lambda v : v == 0'
+          input_twist_name:
+             depend : use_twist_with_covariance
+             depend_bool : 'lambda v : v == 0'
+          input_twist_with_cov_name:
+             depend : use_twist_with_covariance
+             depend_bool : 'lambda v : v == 1'
     - name : twist_generator
       desc : twist_generator
       subs :
@@ -6239,12 +6263,29 @@ params :
       cmd_param :
         dash      : ''
         delim     : ':='
+    - name      : use_twist_with_covariance
+      desc      : use_twist_with_covariance
+      label     : use covariance in twist_with_covariance message
+      kind      : checkbox
+      v         : False
+      cmd_param :
+        dash      : ''
+        delim     : ':='
     - name      : input_twist_name
       desc      : input_twist_name (geometry_msgs/TwistStamped)
       label     : input_twist_name
       v         : /can_twist
       kind  : topic
       topic_type : geometry_msgs/TwistStamped
+      cmd_param :
+        dash      : ''
+        delim     : ':='
+    - name      : input_twist_with_cov_name
+      desc      : input_twist_with_cov_name (geometry_msgs/TwistWithCovarianceStamped)
+      label     : input_twist_with_cov_name
+      v         : /can_twist_with_covariance
+      kind  : topic
+      topic_type : geometry_msgs/TwistWithCovarianceStamped
       cmd_param :
         dash      : ''
         delim     : ':='
