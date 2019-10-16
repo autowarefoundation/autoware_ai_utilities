@@ -407,7 +407,7 @@ subs :
 
     - name : costmap_generator
       desc : costmap_generator desc sample
-      cmd  : roslaunch costmap_generator costmap_generator.launch
+      cmd  : roslaunch costmap_generator costmap_generator_option.launch
       param: costmap_generator_param
       gui  :
         dialog_width  : 400
@@ -6023,6 +6023,15 @@ params :
       cmd_param :
         dash      : ''
         delim     : ':='
+    - name      : use_ll2
+      desc      : Use Lanelet2 map format
+      label     : Lanelet2 (default VectorMap)
+      kind      : checkbox
+      v         : False
+      cmd_param :
+        dash      : ''
+        delim     : ':='
+
   - name  : lidar_cnn_baidu_params
     vars  :
     - name      : points_src
