@@ -617,7 +617,7 @@ subs :
         param: astar_avoid_param
       - name : velocity_set
         desc : velocity_set desc sample
-        cmd  : roslaunch waypoint_planner velocity_set.launch
+        cmd  : roslaunch waypoint_planner velocity_set_option.launch
         param: velocity_set
         gui  :
           use_crosswalk_detection : { border : 4, flags : [ all ] }
@@ -2136,6 +2136,14 @@ params :
       min   : 0
       max   : 150
       v     : 100.0
+    - name      : use_ll2
+      desc      : Use Lanelet2 map format
+      label     : Lanelet2 (default VectorMap)
+      kind      : checkbox
+      v         : False
+      cmd_param :
+        dash      : ''
+        delim     : ':='
 
   - name  : lattice_velocity_set
     topic : /config/lattice_velocity_set
