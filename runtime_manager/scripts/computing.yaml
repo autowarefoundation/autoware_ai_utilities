@@ -1763,14 +1763,6 @@ params :
       cmd_param :
         dash        : ''
         delim       : ':='
-    - name    : publish_debug_values
-      desc    : publish_debug_values
-      label   : 'publish_debug_values'
-      kind    : checkbox
-      v       : False
-      cmd_param :
-        dash        : ''
-        delim       : ':='
     - name    : vehicle_model_type
       desc    : vehicle model for mpc predioction
       label   : vehicle_model_type
@@ -1972,6 +1964,15 @@ params :
       min   : 0.001
       max   : 5.0
       v     : 0.3
+      cmd_param :
+        dash        : ''
+        delim       : ':='
+    - name  : delay_compensation_time
+      desc  : vehicle_model steering delay_compensation_time
+      label : steering time delay [s]
+      min   : 0.00
+      max   : 3.0
+      v     : 0.2
       cmd_param :
         dash        : ''
         delim       : ':='
