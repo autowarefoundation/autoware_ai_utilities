@@ -2574,6 +2574,14 @@ params :
       cmd_param :
         dash      : ''
         delim     : ':='
+    - name      : use_ll2
+      desc      : Use Lanelet2 map format
+      label     : Lanelet2 (default VectorMap)
+      kind      : checkbox
+      v         : False
+      cmd_param :
+        dash      : ''
+        delim     : ':='
 
 
   - name  : car_kf
