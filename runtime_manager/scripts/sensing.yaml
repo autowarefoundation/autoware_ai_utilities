@@ -1271,9 +1271,9 @@ params :
     - name  : concentric_divider_distance
       desc  : Distance of each concentric division on the XY Plane (default 0.01 meters)
       label : concentric_divider_distance
-      min   : 0.01
+      min   : 0.0
       max   : 1
-      v     : 0.01
+      v     : 0.0
       cmd_param :
         dash        : ''
         delim       : ':='
