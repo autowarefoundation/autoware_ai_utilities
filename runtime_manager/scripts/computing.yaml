@@ -449,7 +449,7 @@ subs :
         param: lane_navi
       - name : lane_rule
         desc : lane_rule desc sample
-        cmd  : rosrun lane_planner lane_rule
+        cmd  : roslaunch lane_planner lane_rule_option.launch
         param: lane_rule
       - name : lane_stop
         desc : lane_stop desc sample
@@ -2967,30 +2967,53 @@ params :
       min       : 0
       max       : 100
       v         : 1.0
+      cmd_param :
+        dash        : ''
+        delim       : ':='
     - name      : stopline_search_radius
       desc      : stopline_search_radius desc sample
       label     : Stopline Search Radius (m)
       min       : 0
       max       : 100
       v         : 1.0
+      cmd_param :
+        dash        : ''
+        delim       : ':='
     - name      : number_of_zeros_ahead
       desc      : number_of_zeros_ahead desc sample
       label     : Number of Zeros Ahead
       min       : 0
       max       : 100
       v         : 0
+      cmd_param :
+        dash        : ''
+        delim       : ':='
     - name      : number_of_zeros_behind
       desc      : number_of_zeros_behind desc sample
       label     : Number of Zeros Behind
       min       : 0
       max       : 100
       v         : 0
+      cmd_param :
+        dash        : ''
+        delim       : ':='
     - name      : number_of_smoothing_count
       desc      : number_of_smoothing_count behind desc sample
       label     : number_of_smoothing_count
       min       : 0
       max       : 10
       v         : 0
+      cmd_param :
+        dash        : ''
+        delim       : ':='
+    - name      : use_ll2
+      desc      : Use Lanelet2 map format
+      label     : Lanelet2 (default VectorMap)
+      kind      : checkbox
+      v         : False
+      cmd_param :
+        dash      : ''
+        delim     : ':='
 
   - name  : lane_stop
     topic : /light_color_managed
