@@ -310,7 +310,7 @@ subs :
       subs :
       - name : feat_proj
         desc : feat_proj desc sample
-        cmd  : roslaunch trafficlight_recognizer feat_proj.launch
+        cmd  : roslaunch trafficlight_recognizer feat_proj_option.launch
         param: feat_proj
         gui  :
           flags : [ need_camera_info ]
@@ -2817,6 +2817,14 @@ params :
       min  : -100
       max  : 100
       v    : 0
+    - name : use_ll2
+      desc : Use Lanelet2 Map
+      label: Lanelet2 (default VectorMap)
+      kind : checkbox
+      v    : False
+      cmd_param :
+         dash     : ''
+         delim    : ':='
     - name         : camera_id
       desc         : camera_id desc sample
       kind         : menu
