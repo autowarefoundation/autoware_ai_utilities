@@ -2297,20 +2297,32 @@ params :
     msg   : ConfigTwistFilter
     vars  :
     - name    : lateral_accel_limit
-      desc    : lateral_accel_limit  desc sample
+      desc    : the threshold that limits the lateral acceleration (m/s^2)
       label   : 'lateral_accel_limit :'
       min   : 0
       max   : 5.0
       v         : 5.0
+    - name    : lateral_jerk_limit
+      desc    : the threshold that limits the lateral jerk (m/s^3)
+      label   : 'lateral_jerk_limit :'
+      min   : 0
+      max   : 5.0
+      v         : 5.0
     - name    : lowpass_gain_linear_x
-      desc    : lowpass_gain_linear_x  desc sample
+      desc    : the smoothing factor for exponential moving average of velocity
       label   : 'lowpass_gain_linear_x :'
       min   : 0
       max   : 1.0
       v         : 0.0
     - name    : lowpass_gain_angular_z
-      desc    : lowpass_gain_angular_z  desc sample
+      desc    : the smoothing factor for exponential moving average of angular velocity
       label   : 'lowpass_gain_angular_z :'
+      min   : 0
+      max   : 1.0
+      v         : 0.0
+    - name    : lowpass_gain_steering_angle
+      desc    : the smoothing factor for exponential moving average of steering angle
+      label   : 'lowpass_gain_steering_angle :'
       min   : 0
       max   : 1.0
       v         : 0.0
