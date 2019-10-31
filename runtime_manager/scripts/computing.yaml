@@ -159,6 +159,15 @@ subs :
              depend_bool : 'lambda v : v == 0'
              flags : [ nl ]
              prop  : 1
+    - name : localizer_diagnosis
+      desc : localizer_diagnosis
+      subs :
+      - name : vel_pose_diff_checker
+        desc : vel_pose_diff_checker
+        cmd  : roslaunch vel_pose_diff_checker vel_pose_diff_checker.launch
+        param: vel_pose_diff_checker
+        gui :
+          dialog_height : 350
 
   - name : Detection
     desc : Detection desc sample
@@ -6494,6 +6503,106 @@ params :
       min   : 0.1
       max   : 10.0
       v     : 2.9
+      cmd_param :
+        dash      : ''
+        delim     : ':='
+  - name : vel_pose_diff_checker
+    vars :
+    - name      : input_pose_name
+      desc      : input_pose_name (geometry_msgs/PoseStamped)
+      label     : input_pose_name
+      v         : /ndt_pose
+      kind  : topic
+      topic_type : geometry_msgs/PoseStamped
+      cmd_param :
+        dash      : ''
+        delim     : ':='
+    - name      : input_twist_name
+      desc      : input_twist_name (geometry_msgs/TwistStamped)
+      label     : input_twist_name
+      v         : /vehicle/twist
+      kind  : topic
+      topic_type : geometry_msgs/TwistStamped
+      cmd_param :
+        dash      : ''
+        delim     : ':='
+    - name      : loop_rate_hz
+      desc      : Process cycle [Hz]
+      label     : loop_rate_hz
+      min   : 1.0
+      max   : 100.0
+      v     : 10.0
+      cmd_param :
+        dash      : ''
+        delim     : ':='
+    - name      : comparison_window_size_sec
+      desc      : Comparison window size [sec]
+      label     : comparison_window_size_sec
+      min   : 0.1
+      max   : 10.0
+      v     : 1.0
+      cmd_param :
+        dash      : ''
+        delim     : ':='
+    - name      : topic_timeout_sec
+      desc      : Topic timeout [sec]
+      label     : topic_timeout_sec
+      min   : 0.1
+      max   : 10.0
+      v     : 0.3
+      cmd_param :
+        dash      : ''
+        delim     : ':='
+    - name      : moving_median_window_size_sec
+      desc      : Moving median window size [sec]
+      label     : moving_median_window_size_sec
+      min   : 0.1
+      max   : 10.0
+      v     : 2.0
+      cmd_param :
+        dash      : ''
+        delim     : ':='
+    - name      : diff_position_threshold_meter
+      desc      : Threshold value for position difference [meter]
+      label     : diff_position_threshold_meter
+      min   : 0.01
+      max   : 10.0
+      v     : 1.0
+      cmd_param :
+        dash      : ''
+        delim     : ':='
+    - name      : diff_position_median_threshold_meter
+      desc      : Threshold value for moving median of position difference [meter]
+      label     : diff_position_median_threshold_meter
+      min   : 0.01
+      max   : 10.0
+      v     : 0.5
+      cmd_param :
+        dash      : ''
+        delim     : ':='
+    - name      : diff_angle_threshold_rad
+      desc      : Threshold value for angle difference [rad]
+      label     : diff_angle_threshold_rad
+      min   : 0.01
+      max   : 1.0
+      v     : 0.1
+      cmd_param :
+        dash      : ''
+        delim     : ':='
+    - name      : diff_angle_median_threshold_rad
+      desc      : Threshold value for moving median of angle difference [rad]
+      label     : diff_angle_median_threshold_rad
+      min   : 0.01
+      max   : 1.0
+      v     : 0.05
+      cmd_param :
+        dash      : ''
+        delim     : ':='
+    - name      : enable_emergency_to_twist_gate
+      desc      : If a difference is detected, enter emergency state via twist_gate node
+      label     : enable_emergency_to_twist_gate
+      kind      : checkbox
+      v         : true
       cmd_param :
         dash      : ''
         delim     : ':='
