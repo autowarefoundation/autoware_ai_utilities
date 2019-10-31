@@ -2507,6 +2507,14 @@ params :
       cmd_param :
         dash        : ''
         delim       : ':='
+    - name  : insert_stop_line_wp
+      desc  : If this is enabled, waypoint for the stop line is inserted.
+      label : insert_stop_line_wp
+      kind  : checkbox
+      v     : True
+      cmd_param :
+        dash        : ''
+        delim       : ':='
     - name  : num_of_steer_behind
       desc  : e
       label : num_of_steer_behind
