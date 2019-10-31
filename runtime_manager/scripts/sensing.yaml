@@ -1232,21 +1232,20 @@ params :
       cmd_param :
         dash        : ''
         delim       : ':='
-    - name  : sensor_height
-      desc  : Height of the sensor from the ground
-      label : sensor_height
-      min   : -5
-      max   : 5
-      v     : 1.8
+    - name  : base_frame
+      desc  : Coordinate system to perform transform (default base_link)
+      label : 'base_frame'
+      kind  : str
+      v     : base_link
       cmd_param :
         dash        : ''
         delim       : ':='
     - name  : clipping_height
-      desc  : Remove Points above this height value (default 0.2 meters)
+      desc  : Remove Points above this height value (default 2.0 meters)
       label : clipping_height
       min   : -5
       max   : 5
-      v     : 0.2
+      v     : 2.0
       cmd_param :
         dash        : ''
         delim       : ':='
