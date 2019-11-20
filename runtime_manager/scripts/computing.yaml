@@ -2354,7 +2354,7 @@ params :
       descs   : ['use initialpose from 2D pose estimate in Rviz plugin  as an initial pose source', 'use ndt_pose as an initial pose source', 'use gnss_pose as an initial pose source', 'set initial pose at origin']
       choices_style: h
       choices_type : str
-      v       : Rviz
+      v       : RVIZ
       cmd_param:
         dash     : ''
         delim    : ':='
