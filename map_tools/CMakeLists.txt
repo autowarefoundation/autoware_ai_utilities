@@ -1,22 +1,22 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(map_tools)
 
-
 find_package(autoware_build_flags REQUIRED)
 find_package(catkin REQUIRED COMPONENTS
-        roscpp
-        tf
-        sensor_msgs
-        pcl_ros
-        pcl_conversions
-        )
+  pcl_conversions
+  pcl_ros
+  roscpp
+  sensor_msgs
+  tf
+)
 
 catkin_package(
-        CATKIN_DEPENDS roscpp
-        tf
-        sensor_msgs
-        pcl_ros
-        pcl_conversions
+  CATKIN_DEPENDS
+    pcl_conversions
+    pcl_ros
+    roscpp
+    sensor_msgs
+    tf
 )
 
 SET(CMAKE_CXX_FLAGS "-O2 -g -Wall ${CMAKE_CXX_FLAGS}")
@@ -40,7 +40,16 @@ target_link_libraries(map_extender ${catkin_LIBRARIES})
 target_link_libraries(pcd_grid_divider ${catkin_LIBRARIES})
 
 
-install(TARGETS pcd_filter pcd_binarizer pcd_arealist csv2pcd pcd2csv map_extender pcd_grid_divider
-        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+install(
+  TARGETS
+    csv2pcd
+    map_extender
+    pcd2csv
+    pcd_arealist
+    pcd_binarizer
+    pcd_filter
+    pcd_grid_divider
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)

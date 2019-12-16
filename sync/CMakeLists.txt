@@ -1,35 +1,20 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(synchronization)
 
-## Find catkin macros and libraries
-## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
-## is used, also find other catkin packages
-
 find_package(autoware_build_flags REQUIRED)
-
 find_package(catkin REQUIRED COMPONENTS
+  autoware_msgs
+  geometry_msgs
+  lidar_tracker
+  points2image
   roscpp
   sensor_msgs
   std_msgs
-  lidar_tracker
-  geometry_msgs
   visualization_msgs
-  points2image
-  autoware_msgs
 )
 find_package(OpenCV REQUIRED)
 
-#set(CMAKE_CXX_FLAGS "-O2 -Wall ${CMAKE_CXX_FLAGS}")
-
-###################################
-## catkin specific configuration ##
-###################################
-catkin_package(
-  CATKIN_DEPENDS autoware_msgs points2image message_runtime std_msgs
-)
-###########
-## Build ##
-###########
+catkin_package()
 
 include_directories(
   include
@@ -57,18 +42,19 @@ target_link_libraries(time_monitor ${catkin_LIBRARIES} ${OpenCV_LIBS})
 add_dependencies(time_monitor ${catkin_EXPORTED_TARGETS})
 
         
-install(TARGETS
-        sync_drivers
-        sync_range_fusion
-        sync_track
-        sync_obj_reproj
-        sync_obj_fusion
-        time_monitor
-        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-        )
+install(
+  TARGETS
+    sync_drivers
+    sync_obj_fusion
+    sync_obj_reproj
+    sync_range_fusion
+    sync_track
+    time_monitor
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
         
 install(DIRECTORY launch/
-        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
-        PATTERN ".svn" EXCLUDE)
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
+)

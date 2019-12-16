@@ -1,51 +1,46 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(mqtt_socket)
 
-
 find_package(autoware_build_flags REQUIRED)
-
-find_package(autoware_msgs REQUIRED)
-
 find_package(catkin REQUIRED COMPONENTS
-        roscpp
-        roslib
-        std_msgs
-        autoware_can_msgs
-        autoware_msgs
-        tablet_socket_msgs
+  autoware_can_msgs
+  autoware_msgs
+  roscpp
+  roslib
+  std_msgs
+  tablet_socket_msgs
 )
 
-catkin_package(CATKIN_DEPENDS
-        roscpp
-        roslib
-        std_msgs
-        autoware_msgs
-        autoware_can_msgs
-        tablet_socket_msgs
-        )
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
-if (EXISTS /usr/include/mosquitto.h)
-    set(CMAKE_CXX_FLAGS "-O2 -Wall -fpermissive ${CMAKE_CXX_FLAGS}")
+find_package(Mosquitto REQUIRED)
+find_package(yaml-cpp REQUIRED)
 
-    include_directories(
-            include
-            ${catkin_INCLUDE_DIRS}
-    )
+catkin_package()
 
-    add_executable(mqtt_sender nodes/mqtt_sender/mqtt_sender.cpp)
-    target_link_libraries(mqtt_sender -lmosquitto -lyaml-cpp ${catkin_LIBRARIES})
-    add_dependencies(mqtt_sender
-            ${catkin_EXPORTED_TARGETS}
-            )
+if(MOSQUITTO_FOUND)
+  set(CMAKE_CXX_FLAGS "-O2 -Wall -fpermissive ${CMAKE_CXX_FLAGS}")
 
-    add_executable(mqtt_receiver nodes/mqtt_receiver/mqtt_receiver.cpp)
-    target_link_libraries(mqtt_receiver -lmosquitto -lyaml-cpp ${catkin_LIBRARIES}) #TODO: FIX THIS
-    add_dependencies(mqtt_receiver ${catkin_EXPORTED_TARGETS})
+  include_directories(
+    include
+    ${catkin_INCLUDE_DIRS}
+    ${MOSQUITTO_INCLUDE_DIRS}
+    ${YAML_CPP_INCLUDE_DIR}
+  )
 
-    install(TARGETS mqtt_receiver mqtt_sender
-            ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-            LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-            RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
-else ()
-    message("'libmosquitto-dev' is not installed. 'mqtt_sender' and 'mqtt_receiver' will not be built.")
-endif ()
+  add_executable(mqtt_sender nodes/mqtt_sender/mqtt_sender.cpp)
+  target_link_libraries(mqtt_sender ${MOSQUITTO_LIBRARIES} yaml-cpp ${catkin_LIBRARIES})
+  add_dependencies(mqtt_sender ${catkin_EXPORTED_TARGETS})
+
+  add_executable(mqtt_receiver nodes/mqtt_receiver/mqtt_receiver.cpp)
+  target_link_libraries(mqtt_receiver ${MOSQUITTO_LIBRARIES} yaml-cpp ${catkin_LIBRARIES})
+  add_dependencies(mqtt_receiver ${catkin_EXPORTED_TARGETS})
+
+  install(TARGETS mqtt_receiver mqtt_sender
+    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+  )
+else()
+  message("'libmosquitto-dev' is not installed. 'mqtt_sender' and 'mqtt_receiver' will not be built.")
+endif()

@@ -174,8 +174,8 @@ int Recorder::start() {
     queue_.reset(new std::queue<OutgoingMessage>);
 
     if (!options_.regex) {
-    	foreach(string const& topic, options_.topics)
-			subscribe(topic);
+      foreach(string const& topic, options_.topics)
+      subscribe(topic);
     }
 
     if (!ros::Time::waitForValid(ros::WallDuration(2.0))) {
@@ -228,7 +228,7 @@ void Recorder::stop() {
 }
 
 shared_ptr<ros::Subscriber> Recorder::subscribe(string const& topic) {
-	ROS_INFO("Subscribing to %s", topic.c_str());
+  ROS_INFO("Subscribing to %s", topic.c_str());
 
     ros::NodeHandle nh;
     shared_ptr<int> count(new int(options_.limit));
@@ -580,10 +580,10 @@ void Recorder::doRecordSnapshotter() {
 void Recorder::doCheckMaster(ros::TimerEvent const& e, ros::NodeHandle& node_handle) {
     ros::master::V_TopicInfo topics;
     if (ros::master::getTopics(topics)) {
-		foreach(ros::master::TopicInfo const& t, topics) {
-			if (shouldSubscribeToTopic(t.name))
-				subscribe(t.name);
-		}
+    foreach(ros::master::TopicInfo const& t, topics) {
+      if (shouldSubscribeToTopic(t.name))
+        subscribe(t.name);
+    }
     }
     
     if (options_.node != std::string(""))

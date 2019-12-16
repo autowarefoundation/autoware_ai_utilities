@@ -9,10 +9,6 @@ catkin_package(
   CATKIN_DEPENDS python_qt_binding
 )
 
-if(CATKIN_ENABLE_TESTING)
-  catkin_add_nosetests(tests)
-endif()
-
 catkin_install_python(
   PROGRAMS scripts/main scripts/tool
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -29,3 +25,7 @@ install(DIRECTORY plugins/
 install(DIRECTORY profiles/
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/profiles
 )
+
+if(CATKIN_ENABLE_TESTING)
+  catkin_add_nosetests(tests)
+endif()

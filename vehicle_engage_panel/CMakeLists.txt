@@ -1,12 +1,11 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(vehicle_engage_panel)
 
-
 find_package(autoware_build_flags REQUIRED)
 find_package(catkin REQUIRED COMPONENTS
+  autoware_msgs
   rviz
   std_msgs
-	autoware_msgs
 )
 
 if(rviz_QT_VERSION VERSION_LESS "5")
@@ -28,23 +27,20 @@ include_directories(
 )
 SET(CMAKE_CXX_FLAGS "-O2 -g -Wall -Wno-unused-result -DROS ${CMAKE_CXX_FLAGS}")
 
-
 add_definitions(-DQT_NO_KEYWORDS -g)
 
 set(CMAKE_AUTOMOC ON)
-set(SOURCE_FILES
-  src/vehicle_engage_panel.cpp
-  )
+set(SOURCE_FILES src/vehicle_engage_panel.cpp)
 
 add_library(vehicle_engage_panel ${SOURCE_FILES} ${UIC_FILES})
 target_link_libraries(vehicle_engage_panel ${QT_LIBRARIES} ${catkin_LIBRARIES} ${rviz_DEFAULT_PLUGIN_LIBRARIES})
 
-install(TARGETS
-  ${PROJECT_NAME}
+install(TARGETS ${PROJECT_NAME}
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
 install(FILES plugin_description.xml
-      DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)

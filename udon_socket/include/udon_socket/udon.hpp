@@ -25,17 +25,17 @@ namespace udon_socket {
 
 namespace udon {
 
-constexpr std::int32_t MODE_NORMAL	= 0;
-constexpr std::int32_t MODE_AUTO	= 1;
-constexpr std::int32_t MODE_ERROR	= 2;
+constexpr std::int32_t MODE_NORMAL  = 0;
+constexpr std::int32_t MODE_AUTO  = 1;
+constexpr std::int32_t MODE_ERROR  = 2;
 
 struct Location {
-	double x;
-	double y;
-	double z;
-	double d;
+  double x;
+  double y;
+  double z;
+  double d;
 
-	bool operator !=(const Location& location) const;
+  bool operator !=(const Location& location) const;
 };
 
 ssize_t send_request(int fd);
