@@ -86,7 +86,7 @@ private:
 
 inline double mps2kmph(double _mpsval)
 {
-	return (_mpsval * 60 * 60) / 1000; // mps * 60sec * 60 minute / 1000m
+  return (_mpsval * 60 * 60) / 1000; // mps * 60sec * 60 minute / 1000m
 }
 
 MqttSender::MqttSender() :

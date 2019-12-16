@@ -14,13 +14,13 @@ Yuki Kitsukawa
 
 std::vector<std::string> split(std::string &input, char delimiter)
 {
-	std::istringstream stream(input);
-	std::string field;
-	std::vector<std::string> result;
-	while(std::getline(stream, field, delimiter)){
-		result.push_back(field);
-	}
-	return result;
+  std::istringstream stream(input);
+  std::string field;
+  std::vector<std::string> result;
+  while(std::getline(stream, field, delimiter)){
+    result.push_back(field);
+  }
+  return result;
 }
 
 int main (int argc, char** argv)
@@ -47,19 +47,19 @@ int main (int argc, char** argv)
     pcl::PointCloud<pcl::PointXYZI> output_cloud;
 
     if(!ifs){
-    	std::cout << "Can't read " << input << "." << std::endl;
+      std::cout << "Can't read " << input << "." << std::endl;
     }
 
     // Read csv line by line.
     std::string line;
     while(std::getline(ifs, line)){
-    	std::vector<std::string> str_vec = split(line, ',');
+      std::vector<std::string> str_vec = split(line, ',');
 
-    	p.x = std::stof(str_vec.at(0));
-    	p.y = std::stof(str_vec.at(1));
-    	p.z = std::stof(str_vec.at(2));
-    	p.intensity = std::stoi(str_vec.at(3));
-    	output_cloud.push_back(p);
+      p.x = std::stof(str_vec.at(0));
+      p.y = std::stof(str_vec.at(1));
+      p.z = std::stof(str_vec.at(2));
+      p.intensity = std::stoi(str_vec.at(3));
+      output_cloud.push_back(p);
     }
 
     if(pcl::io::savePCDFileBinary(output, output_cloud) == -1){

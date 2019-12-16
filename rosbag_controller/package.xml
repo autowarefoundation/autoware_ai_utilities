@@ -18,6 +18,7 @@
   <depend>rviz</depend>
   <depend>topic_tools</depend>
   <depend>xmlrpcpp</depend>
+  <depend>yaml-cpp</depend>
   
   <exec_depend>python-rospkg</exec_depend>
 

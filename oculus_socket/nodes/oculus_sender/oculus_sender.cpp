@@ -83,7 +83,7 @@ static void vscan_Callback(const sensor_msgs::PointCloud2ConstPtr& msg){
   pcl::fromROSMsg(*msg, _vscan);
   for (pcl::PointCloud<pcl::PointXYZ>::const_iterator item = _vscan.begin(); item != _vscan.end(); item++){
     if (item->x == 0 && item->y == 0)continue;
-    if(prev.x==0&&prev.y==0&&prev.y==0){	
+    if(prev.x==0&&prev.y==0&&prev.y==0){  
       prev.x = item->x;
       prev.y = item->y;
       prev.z = item->z;

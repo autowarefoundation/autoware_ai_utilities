@@ -1,10 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(lanelet_aisan_converter)
 
-# Compile as C++14, supported in ROS Melodic and newer
 add_compile_options(-std=c++14)
 
-# Find catkin macros and libraries
 find_package(catkin REQUIRED COMPONENTS
   amathutils_lib
   geodesy
@@ -37,13 +35,11 @@ catkin_package(
 set(ROSLINT_CPP_OPTS "--filter=-build/c++14")
 roslint_cpp()
 
-# Set include directories
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
 )
 
-# Target: aisan_map
 add_library(aisan_map STATIC
   lib/aisan_map/aisan_map.cpp
 )
@@ -112,10 +108,8 @@ install(DIRECTORY include/${PROJECT_NAME}/
 
 # Install scripts
 install(
-  PROGRAMS
-    scripts/launch_vector_map_loader.sh
-  DESTINATION
-    ${CATKIN_PACKAGE_SHARE_DESTINATION}/scripts
+  PROGRAMS scripts/launch_vector_map_loader.sh
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/scripts
 )
 
 # Test

@@ -83,7 +83,7 @@ void SaveDepth::create_depth(){
   int width = ImageSize_.width;
   int height = ImageSize_.height;
   cv::Mat invR = CameraExtrinsicMat_(cv::Rect(0,0,3,3)).t();
-	cv::Mat invT = -invR*(CameraExtrinsicMat_(cv::Rect(3,0,1,3)));
+  cv::Mat invT = -invR*(CameraExtrinsicMat_(cv::Rect(3,0,1,3)));
   cv::Mat invR_T = invR.t();
   cv::Mat invT_T = invT.t();
 
@@ -107,33 +107,33 @@ void SaveDepth::create_depth(){
     // cout << "z " << item->z << endl;
     // cout << item->intensity << endl;
     cv::Mat point(1, 3, CV_64F);
-		point.at<double>(0) = double(item->x);
-		point.at<double>(1) = double(item->y);
-		point.at<double>(2) = double(item->z);
-		point = point * invR_T + invT_T;
+    point.at<double>(0) = double(item->x);
+    point.at<double>(1) = double(item->y);
+    point.at<double>(2) = double(item->z);
+    point = point * invR_T + invT_T;
 
     // if (point.at<double>(2) <= 2.5) {
     //   continue;
     // }
 
     double tmpx = point.at<double>(0) / point.at<double>(2);
-		double tmpy = point.at<double>(1)/point.at<double>(2);
-		double r2 = tmpx * tmpx + tmpy * tmpy;
-		double tmpdist = 1 + DistCoeff_.at<double>(0) * r2
-			+ DistCoeff_.at<double>(1) * r2 * r2
-			+ DistCoeff_.at<double>(4) * r2 * r2 * r2;
+    double tmpy = point.at<double>(1)/point.at<double>(2);
+    double r2 = tmpx * tmpx + tmpy * tmpy;
+    double tmpdist = 1 + DistCoeff_.at<double>(0) * r2
+      + DistCoeff_.at<double>(1) * r2 * r2
+      + DistCoeff_.at<double>(4) * r2 * r2 * r2;
 
-		cv::Point2d imagepoint;
-		imagepoint.x = tmpx * tmpdist
-			+ 2 * DistCoeff_.at<double>(2) * tmpx * tmpy
-			+ DistCoeff_.at<double>(3) * (r2 + 2 * tmpx * tmpx);
-		imagepoint.y = tmpy * tmpdist
-			+ DistCoeff_.at<double>(2) * (r2 + 2 * tmpy * tmpy)
-			+ 2 * DistCoeff_.at<double>(3) * tmpx * tmpy;
-		imagepoint.x = CameraMat_.at<double>(0,0) * imagepoint.x + CameraMat_.at<double>(0,2);
-		imagepoint.y = CameraMat_.at<double>(1,1) * imagepoint.y + CameraMat_.at<double>(1,2);
+    cv::Point2d imagepoint;
+    imagepoint.x = tmpx * tmpdist
+      + 2 * DistCoeff_.at<double>(2) * tmpx * tmpy
+      + DistCoeff_.at<double>(3) * (r2 + 2 * tmpx * tmpx);
+    imagepoint.y = tmpy * tmpdist
+      + DistCoeff_.at<double>(2) * (r2 + 2 * tmpy * tmpy)
+      + 2 * DistCoeff_.at<double>(3) * tmpx * tmpy;
+    imagepoint.x = CameraMat_.at<double>(0,0) * imagepoint.x + CameraMat_.at<double>(0,2);
+    imagepoint.y = CameraMat_.at<double>(1,1) * imagepoint.y + CameraMat_.at<double>(1,2);
     int px = int(imagepoint.x + 0.5);
-		int py = int(imagepoint.y + 0.5);
+    int py = int(imagepoint.y + 0.5);
 
     // cout << "px " << px << endl;
     // cout << "py " << py << endl;
