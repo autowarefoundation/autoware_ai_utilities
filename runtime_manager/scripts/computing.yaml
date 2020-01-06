@@ -6598,11 +6598,3 @@ params :
       cmd_param :
         dash      : ''
         delim     : ':='
-    - name      : enable_emergency_to_twist_gate
-      desc      : If a difference is detected, enter emergency state via twist_gate node
-      label     : enable_emergency_to_twist_gate
-      kind      : checkbox
-      v         : true
-      cmd_param :
-        dash      : ''
-        delim     : ':='
