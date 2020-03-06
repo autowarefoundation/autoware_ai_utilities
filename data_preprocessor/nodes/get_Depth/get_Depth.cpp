@@ -166,8 +166,8 @@ void SaveDepth::create_depth(){
   // cout << "ok1" << endl;
   cv::minMaxLoc(depth, &min, &max);
   // cout << "ok2 " << max  << endl;
-  for (int w; w<width; w++){
-    for (int h; h<height; h++){
+  for (int w = 0; w<width; w++){
+    for (int h = 0; h<height; h++){
       if (depth.at<double>(h, w) != 0){
         depth.at<double>(h, w) = depth.at<double>(h, w) / max;
       }
