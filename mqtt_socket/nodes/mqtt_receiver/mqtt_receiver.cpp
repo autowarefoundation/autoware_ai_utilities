@@ -143,7 +143,7 @@ static void MqttReceiver::on_message(struct mosquitto *mosq, void *obj, const st
       msg.vehicle_cmd.steer_cmd.steer = stof(cmds[0]) * steer_max_val;
       msg.vehicle_cmd.accel_cmd.accel = stof(cmds[1]) * accel_max_val;
       msg.vehicle_cmd.brake_cmd.brake = stof(cmds[2]) * brake_max_val;
-      msg.vehicle_cmd.gear = stoi(cmds[3]);
+      msg.vehicle_cmd.gear_cmd.gear = stoi(cmds[3]);
       // lamp
       switch(stoi(cmds[4])) {
         msg.vehicle_cmd.lamp_cmd.l = 0;
