@@ -13,12 +13,23 @@ subs :
         param: gnss
         gui  :
           stat_topic : [ gnss ]
+          plane :
+            flags : [ nl ]
+          sim_mode :
+            depend : sim_mode
+            depend_bool : 'lambda v : v == 1'
       - name : nmea2tfpose
         desc : nmea2tfpose desc sample
         cmd  : roslaunch gnss_localizer nmea2tfpose.launch
         param: gnss
         gui  :
           stat_topic : [ gnss ]
+          plane :
+            depend : sim_mode
+            depend_bool : 'lambda v : v == 0'
+            flags : [ nl ]
+          sim_mode :
+            flags : [ nl ]
     - name : lidar_localizer
       desc : lidar_localizer desc sample
       subs :
@@ -1408,6 +1419,14 @@ params :
       cmd_param :
         dash        : ''
         delim       : ':='
+    - name    : sim_mode
+      desc    : Enable simulation mode - plane origin at (0°, 0°)
+      label   : 'Simulation Mode'
+      kind    : checkbox
+      v       : False
+      cmd_param:
+        dash     : ''
+        delim    : ':='
 
   - name  : ndt
     topic : /config/ndt
