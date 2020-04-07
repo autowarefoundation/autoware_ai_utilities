@@ -1,0 +1,4 @@
+disks:
+- name: /dev/nvme0n1
+  temp_warn: 55.0
+  temp_error: 70.0
