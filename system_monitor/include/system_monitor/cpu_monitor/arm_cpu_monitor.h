@@ -21,9 +21,9 @@
  * @brief ARM CPU monitor class
  */
 
-#include <system_monitor/cpu_monitor/arm_cpu_monitor_base.h>
+#include <system_monitor/cpu_monitor/cpu_monitor_base.h>
 
-class CPUMonitor: public ArmCPUMonitorBase
+class CPUMonitor: public CPUMonitorBase
 {
 public:
   /**
@@ -32,6 +32,11 @@ public:
    * @param [in] pnh node handle to access private parameters
    */
   CPUMonitor(const ros::NodeHandle &nh, const ros::NodeHandle &pnh);
+
+  /**
+   * @brief get names for core temperature files
+   */
+  void getTempNames(void) override;
 
 protected:
   /**
