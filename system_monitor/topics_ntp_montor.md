@@ -4,6 +4,7 @@
 /diagnostics/ntp_monitor: NTP Offset
 
 <b>[summary]</b>
+
 | level | message |
 | ---- | --- |
 | OK | OK |
@@ -11,6 +12,7 @@
 | ERROR | too high |
 
 <b>[values]</b>
+
 | key | value (example) |
 | ---- | --- |
 | NTP Offset | -0.013181 sec |

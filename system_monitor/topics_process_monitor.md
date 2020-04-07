@@ -4,11 +4,13 @@
 /diagnostics/process_monitor: Tasks Summary
 
 <b>[summary]</b>
+
 | level | message |
 | ---- | --- |
 | OK | OK |
 
 <b>[values]</b>
+
 | key | value (example) |
 | ---- | --- |
 | total | 409 |
@@ -19,6 +21,14 @@
 
 ## <u>High-load Proc[0-9]</u>
 /diagnostics/process_monitor: High-load Proc[0-9]
+
+<b>[summary]</b>
+
+| level | message |
+| ---- | --- |
+| OK | OK |
+
+<b>[values]</b>
 
 | key | value (example) |
 | ---- | --- |
@@ -37,6 +47,14 @@
 
 ## <u>High-mem Proc[0-9]</u>
 /diagnostics/process_monitor: High-mem Proc[0-9]
+
+<b>[summary]</b>
+
+| level | message |
+| ---- | --- |
+| OK | OK |
+
+<b>[values]</b>
 
 | key | value (example) |
 | ---- | --- |

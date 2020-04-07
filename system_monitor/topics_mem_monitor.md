@@ -4,6 +4,7 @@
 /diagnostics/mem_monitor: Memory Usage
 
 <b>[summary]</b>
+
 | level | message |
 | ---- | --- |
 | OK | OK |
@@ -11,6 +12,7 @@
 | ERROR | very high load |
 
 <b>[values]</b>
+
 | key | value (example) |
 | ---- | --- |
 | Mem: usage | 18.99% |

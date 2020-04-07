@@ -4,6 +4,7 @@
 /diagnostics/cpu_monitor: Network Usage
 
 <b>[summary]</b>
+
 | level | message |
 | ---- | --- |
 | OK | OK |
@@ -11,6 +12,7 @@
 | ERROR | down |
 
 <b>[values]</b>
+
 | key | value (example) |
 | ---- | --- |
 | Network [0-9]: status | OK / high load / down |

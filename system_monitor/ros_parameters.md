@@ -15,8 +15,10 @@ cpu_monitor:
 
 ## <u>HDD Monitor</u>
 
-hdd_monitor:<br>
+hdd_monitor:
+
 &nbsp;&nbsp;disks:
+
 | Name | Type | Unit | Default | Notes |
 | :---- | :---: | :---: | :---: | :--- |
 | name | string | n/a | none | The disk name to monitor temperature. (e.g. /dev/sda) |
@@ -32,6 +34,7 @@ hdd_monitor:
 ## <u>Memory Monitor</u>
 
 mem_monitor:
+
 | Name | Type | Unit | Default | Notes |
 | :---- | :---: | :---: | :---: | :--- |
 | usage_warn | float | %(1e-2) | 0.95 | Generates warning when physical memory usage reaches a specified value or higher. |
@@ -40,6 +43,7 @@ mem_monitor:
 ## <u>Net Monitor</u>
 
 net_monitor:
+
 | Name | Type | Unit | Default | Notes |
 | :---- | :---: | :---: | :---: | :--- |
 | devices | list[string] | n/a | none | The name of network interface to monitor. (e.g. eth0, * for all network interfaces) |
@@ -48,6 +52,7 @@ net_monitor:
 ## <u>NTP Monitor</u>
 
 ntp_monitor:
+
 | Name | Type | Unit | Default | Notes |
 | :---- | :---: | :---: | :---: | :--- |
 | server | string | n/a | ntp.ubuntu.com | The name of NTP server to synchronize date and time. (e.g. ntp.nict.jp for Japan) |
@@ -57,6 +62,7 @@ ntp_monitor:
 ## <u>Process Monitor</u>
 
 process_monitor:
+
 | Name | Type | Unit | Default | Notes |
 | :---- | :---: | :---: | :---: | :--- |
 | num_of_procs | int | n/a | 5 | The number of processes to generate High-load Proc[0-9] and High-mem Proc[0-9]. |
@@ -64,6 +70,7 @@ process_monitor:
 ## <u>GPU Monitor</u>
 
 gpu_monitor:
+
 | Name | Type | Unit | Default | Notes |
 | :---- | :---: | :---: | :---: | :--- |
 | temp_warn | float | DegC | 90.0 | Generates warning when GPU temperature reaches a specified value or higher. |

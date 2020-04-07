@@ -7,6 +7,7 @@
 /diagnostics/gpu_monitor: GPU Temperature
 
 <b>[summary]</b>
+
 | level | message |
 | ---- | --- |
 | OK | OK |
@@ -14,6 +15,7 @@
 | ERROR | hot |
 
 <b>[values]</b>
+
 | key (example) | value (example) |
 | ---- | --- |
 | GeForce GTX 1650, thermal_zone[0-9] | 46.0 DegC |
@@ -23,6 +25,7 @@
 /diagnostics/gpu_monitor: GPU Usage
 
 <b>[summary]</b>
+
 | level | message |
 | ---- | --- |
 | OK | OK |
@@ -30,6 +33,7 @@
 | ERROR | very high load |
 
 <b>[values]</b>
+
 | key | value (example) |
 | ---- | --- |
 | GPU [0-9]: status | OK / high load / very high load |
@@ -44,6 +48,7 @@
 /diagnostics/gpu_monitor: GPU Memory Usage
 
 <b>[summary]</b>
+
 | level | message |
 | ---- | --- |
 | OK | OK |
@@ -51,6 +56,7 @@
 | ERROR | very high load |
 
 <b>[values]</b>
+
 | key | value (example) |
 | ---- | --- |
 | GPU [0-9]: status | OK / high load / very high load |
@@ -67,12 +73,14 @@
 /diagnostics/gpu_monitor: GPU Thermal Throttling
 
 <b>[summary]</b>
+
 | level | message |
 | ---- | --- |
 | OK | OK |
 | ERROR | throttling |
 
 <b>[values]</b>
+
 | key | value (example) |
 | ---- | --- |
 | GPU [0-9]: status | OK / throttling |
@@ -86,11 +94,13 @@
 /diagnostics/gpu_monitor: GPU Frequency
 
 <b>[summary]</b>
+
 | level | message |
 | ---- | --- |
 | OK | OK |
 
 <b>[values]</b>
+
 | key (example) | value (example) |
 | ---- | --- |
 | GPU 17000000.gv11b: clock | 318 MHz |

@@ -4,6 +4,7 @@
 /diagnostics/hdd_monitor: HDD Temperature 
 
 <b>[summary]</b>
+
 | level | message |
 | ---- | --- |
 | OK | OK |
@@ -11,6 +12,7 @@
 | ERROR | critical hot |
 
 <b>[values]</b>
+
 | key | value (example) |
 | ---- | --- |
 | HDD [0-9]: status | OK / hot / critical hot |
@@ -23,6 +25,7 @@
 /diagnostics/hdd_monitor: HDD Usage
 
 <b>[summary]</b>
+
 | level | message |
 | ---- | --- |
 | OK | OK |
@@ -30,6 +33,7 @@
 | ERROR | very low disk space |
 
 <b>[values]</b>
+
 | key | value (example) |
 | ---- | --- |
 | HDD [0-9]: status | OK / low disk space / very low disk space |
