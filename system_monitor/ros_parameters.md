@@ -3,6 +3,7 @@
 ## <u>CPU Monitor</u>
 
 cpu_monitor:
+
 | Name | Type | Unit | Default | Notes |
 | :---- | :---: | :---: | :---: | :--- |
 | temp_warn | float | DegC | 90.0 | Generates warning when CPU temperature reaches a specified value or higher. |
