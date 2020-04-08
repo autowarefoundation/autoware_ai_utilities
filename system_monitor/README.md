@@ -90,6 +90,15 @@ Also you need to install S.M.A.R.T. Monitoring Tools into your target system.
 sudo apt install -y smartmontools
 ```
 
+## <u>Net Monitor</u>
+Net Monitor uses iw, which is utility for wireless devices, to get wireless network capacity if your target machine has a wireless network adapter. <br>
+Net Monitor basically uses ethtool, but ethtool can't get wireless network capacity because it is designed for ethernet.
+
+You need to install iw into your target system.
+```
+sudo apt install -y iw
+```
+
 ## <u>NTP Monitor</u>
 NTP Monitor uses ntpdate to monitor NTP offset of given peer.
 

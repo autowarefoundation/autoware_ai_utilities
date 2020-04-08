@@ -191,7 +191,7 @@ void NetMonitor::checkUsage(diagnostic_updater::DiagnosticStatusWrapper &stat)
 
 float NetMonitor::getWirelessSpeed(const char *ifa_name)
 {
-  // Get SMART information about the disk
+  // Get wireless network capacity
   bp::ipstream is_out;
   bp::child c((boost::format("iw dev %1% link") % ifa_name).str(), bp::std_out > is_out);
   c.wait();
