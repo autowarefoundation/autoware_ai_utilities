@@ -26,6 +26,7 @@ hdd_monitor:
 | temp_error | float | DegC | 70.0 | Generates error when HDD temperature reaches a specified value or higher. |
 
 hdd_monitor:
+
 | Name | Type | Unit | Default | Notes |
 | :---- | :---: | :---: | :---: | :--- |
 | usage_warn | float | %(1e-2) | 0.95 | Generates warning when disk usage reaches a specified value or higher. |
