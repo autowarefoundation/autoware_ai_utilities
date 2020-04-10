@@ -38,6 +38,9 @@ GPUMonitor::GPUMonitor(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
 
   // There is no separate gpu memory in tegra. Both cpu and gpu uses cpu memory. thus remove.
   updater_.removeByName("GPU Memory Usage");
+  // There is no event record for thermal throttling.
+  // Need to manually monitor temperature to figure out if thermal limits crossed or not.
+  updater_.removeByName("GPU Thermal Throttling");
 }
 
 void GPUMonitor::checkTemp(diagnostic_updater::DiagnosticStatusWrapper &stat)

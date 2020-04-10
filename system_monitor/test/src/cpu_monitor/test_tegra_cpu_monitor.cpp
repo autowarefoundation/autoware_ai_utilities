@@ -541,21 +541,6 @@ TEST_F(CPUMonitorTestSuite, load5WarnTest)
   }
 }
 
-TEST_F(CPUMonitorTestSuite, DISABLED_throttlingTest)
-{
-  // Publish topic
-  monitor_->update();
-
-  // Give time to publish
-  ros::WallDuration(0.5).sleep();
-  ros::spinOnce();
-
-  // Verify
-  DiagStatus status;
-  ASSERT_TRUE(monitor_->findDiagStatus("CPU Thermal Throttling", status));
-  ASSERT_EQ(status.level, DiagStatus::OK);
-}
-
 TEST_F(CPUMonitorTestSuite, freqTest)
 {
   // Publish topic

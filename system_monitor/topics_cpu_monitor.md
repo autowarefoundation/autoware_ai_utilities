@@ -59,7 +59,7 @@
 
 ## <u>CPU Thermal Throttling</u>
 > Intel and raspi platform only.<br>
-> <u>Currently investigating for tegra platform.</u>
+> Tegra platform not supported.
 
 /diagnostics/cpu_monitor: CPU Thermal Throttling 
 

@@ -68,7 +68,7 @@
 
 ## <u>GPU Thermal Throttling</u>
 > Intel platform only.<br>
-> <u>Currently investigating for tegra platform.</u>
+> Tegra platform not supported.
 
 /diagnostics/gpu_monitor: GPU Thermal Throttling
 

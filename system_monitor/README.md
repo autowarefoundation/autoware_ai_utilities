@@ -44,6 +44,29 @@ Every topic is published in 1 minute interval.
 - [Process Monitor](topics_process_monitor.md)
 - [GPU Monitor](topics_gpu_monitor.md)
 
+[Usage] ✓：Supported, -：Not supported
+
+| Node | Message | Intel | arm64(tegra) | arm64(raspi) | Notes |
+| ---- | --- | :---: | :---: | :---: | --- |
+| CPU Monitor     | CPU Temperature        | ✓ | ✓ | ✓ | |
+|                 | CPU Usage              | ✓ | ✓ | ✓ | |
+|                 | CPU Load Average       | ✓ | ✓ | ✓ | |
+|                 | CPU Thermal Throttling | ✓ | - | ✓ | |
+|                 | CPU Frequency          | ✓ | ✓ | ✓ | Notification of frequency only, normally error not generated. |
+| HDD Monitor     | HDD Temperature        | ✓ | ✓ | ✓ | |
+|                 | HDD Usage              | ✓ | ✓ | ✓ | |
+| Memory Monitor  | Memory Usage           | ✓ | ✓ | ✓ | |
+| Net Monitor     | Network Usage          | ✓ | ✓ | ✓ | |
+| NTP Monitor     | NTP Offset             | ✓ | ✓ | ✓ | |
+| Process Monitor | Tasks Summary          | ✓ | ✓ | ✓ | |
+|                 | High-load Proc[0-9]    | ✓ | ✓ | ✓ | |
+|                 | High-mem Proc[0-9]	   | ✓ | ✓ | ✓ | |
+| GPU Monitor     | GPU Temperature        | ✓ | ✓ | - | |
+|                 | GPU Usage              | ✓ | ✓ | - | |
+|                 | GPU Memory Usage       | ✓ | - | - | |
+|                 | GPU Thermal Throttling | ✓ | - | - | |
+|                 | GPU Frequency          | - | ✓ | - | |
+
 ## ROS parameters
 
  See [ROS parameters](ros_parameters.md).
@@ -117,6 +140,3 @@ For installation instructions for CUDA 10.0, see [NVIDIA CUDA Installation Guide
  See [Class diagrams](class_diagrams.md).
  See [Sequence diagrams](seq_diagrams.md).
 
-# Remaining works
-
- - Detection of CPU & GPU thermal throttling event on tegra platform.
