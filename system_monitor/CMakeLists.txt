@@ -23,7 +23,7 @@ roslint_cpp()
 ## catkin specific configuration ##
 ###################################
 catkin_package(
-  CATKIN_DEPENDS roscpp std_msgs
+  CATKIN_DEPENDS std_msgs
 )
 
 ###########
