@@ -29,12 +29,8 @@
 #include <netdb.h>
 #include <sys/ioctl.h>
 #include <boost/format.hpp>
-#include <boost/process.hpp>
 #include <boost/range/algorithm.hpp>
-#include <boost/regex.hpp>
 #include <system_monitor/net_monitor/net_monitor.h>
-
-namespace bp = boost::process;
 
 NetMonitor::NetMonitor(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
   : nh_(nh), pnh_(pnh)
@@ -46,6 +42,8 @@ NetMonitor::NetMonitor(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
 
   updater_.setHardwareID(hostname_);
   updater_.add("Network Usage", this, &NetMonitor::checkUsage);
+
+  nl80211_.init();
 }
 
 void NetMonitor::run(void)
@@ -58,6 +56,8 @@ void NetMonitor::run(void)
     updater_.force_update();
     rate.sleep();
   }
+
+  nl80211_.shutdown();
 }
 
 void NetMonitor::checkUsage(diagnostic_updater::DiagnosticStatusWrapper &stat)
@@ -127,8 +127,8 @@ void NetMonitor::checkUsage(diagnostic_updater::DiagnosticStatusWrapper &stat)
     edata.cmd = ETHTOOL_GSET;
     if (ioctl(fd, SIOCETHTOOL, &ifrc) < 0)
     {
-      // possibly wireless connection
-      speed = getWirelessSpeed(ifa->ifa_name);
+      // possibly wireless connection, get bitrate(MBit/s) and convert to B/s
+      speed = nl80211_.getBitrate(ifa->ifa_name) / 8;
       if (speed <= 0)
       {
         stat.add((boost::format("Network %1%: status") % index).str(), usage_dict_.at(level));
@@ -187,27 +187,4 @@ void NetMonitor::checkUsage(diagnostic_updater::DiagnosticStatusWrapper &stat)
     stat.summary(whole_level, usage_dict_.at(whole_level));
 
   last_update_time_ = ros::Time::now();
-}
-
-float NetMonitor::getWirelessSpeed(const char *ifa_name)
-{
-  // Get wireless network capacity
-  bp::ipstream is_out;
-  bp::child c((boost::format("iw dev %1% link") % ifa_name).str(), bp::std_out > is_out);
-  c.wait();
-  if (c.exit_code() != 0)
-  {
-    return 0;
-  }
-
-  float speed = 0.0;
-  boost::smatch match;
-  const boost::regex filter(".*tx bitrate: (\\d+.?\\d*|\\.\\d+).*");
-  std::string line;
-  while (std::getline(is_out, line) && !line.empty())
-  {
-    if (boost::regex_match(line, match, filter)) speed = std::atof(match[1].str().c_str());
-  }
-
-  return speed;
 }

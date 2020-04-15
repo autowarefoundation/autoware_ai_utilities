@@ -32,15 +32,22 @@ catkin_package(
 
 ## Specify additional locations of header files
 
+find_path(LIBNL3_INCLUDE_DIRS
+  NAMES netlink/netlink.h
+  PATH_SUFFIXES libnl3
+)
+
 if (CUDA_FOUND)
   include_directories(
     include
     ${catkin_INCLUDE_DIRS}
+    ${LIBNL3_INCLUDE_DIRS}
     ${CUDA_INCLUDE_DIRS}
   )
 else()
   include_directories(
     include
+    ${LIBNL3_INCLUDE_DIRS}
     ${catkin_INCLUDE_DIRS}
   )
 endif()
@@ -106,6 +113,7 @@ add_executable(mem_monitor
 add_executable(net_monitor
   src/net_monitor/net_monitor_node.cpp
   src/net_monitor/net_monitor.cpp
+  src/net_monitor/nl80211.cpp
 )
 add_executable(ntp_monitor
   src/ntp_monitor/ntp_monitor_node.cpp
@@ -134,11 +142,15 @@ add_dependencies(ntp_monitor ${catkin_EXPORTED_TARGETS})
 add_dependencies(process_monitor ${catkin_EXPORTED_TARGETS})
 add_dependencies(gpu_monitor ${catkin_EXPORTED_TARGETS})
 
+find_library(NL3 nl-3)
+find_library(NLGENL3 nl-genl-3)
+list(APPEND NL_LIBS ${NL3} ${NLGENL3})
+
 ## Specify libraries to link a library or executable target against
 target_link_libraries(cpu_monitor ${catkin_LIBRARIES})
 target_link_libraries(hdd_monitor ${catkin_LIBRARIES})
 target_link_libraries(mem_monitor ${catkin_LIBRARIES})
-target_link_libraries(net_monitor ${catkin_LIBRARIES})
+target_link_libraries(net_monitor ${catkin_LIBRARIES} ${NL_LIBS})
 target_link_libraries(ntp_monitor ${catkin_LIBRARIES})
 target_link_libraries(process_monitor ${catkin_LIBRARIES})
 target_link_libraries(gpu_monitor ${catkin_LIBRARIES} ${GPU_LIBRARY})
@@ -208,8 +220,9 @@ if (CATKIN_ENABLE_TESTING)
     test/test_net_monitor.test
     test/src/net_monitor/test_net_monitor.cpp
     src/net_monitor/net_monitor.cpp
+    src/net_monitor/nl80211.cpp
   )
-  target_link_libraries(test_net_monitor ${catkin_LIBRARIES})
+  target_link_libraries(test_net_monitor ${catkin_LIBRARIES} ${NL_LIBS})
 
   add_rostest_gtest(test_ntp_monitor
     test/test_ntp_monitor.test
@@ -237,7 +250,6 @@ if (CATKIN_ENABLE_TESTING)
   add_executable(mpstat2 test/src/cpu_monitor/mpstat2.cpp)
   add_executable(df1 test/src/hdd_monitor/df1.cpp)
   add_executable(free1 test/src/mem_monitor/free1.cpp)
-  add_executable(iw1 test/src/net_monitor/iw1.cpp)
   add_executable(ntpdate1 test/src/ntp_monitor/ntpdate1.cpp)
   add_executable(top1 test/src/process_monitor/top1.cpp)
   add_executable(top2 test/src/process_monitor/top2.cpp)
@@ -250,7 +262,6 @@ if (CATKIN_ENABLE_TESTING)
   install(TARGETS mpstat2 RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
   install(TARGETS df1 RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
   install(TARGETS free1 RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
-  install(TARGETS iw1 RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
   install(TARGETS ntpdate1 RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
   install(TARGETS top1 RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
   install(TARGETS top2 RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})

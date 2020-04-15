@@ -25,6 +25,7 @@
 #include <string>
 #include <vector>
 #include <diagnostic_updater/diagnostic_updater.h>
+#include <system_monitor/net_monitor/nl80211.h>
 
 #define toMbit(X) (static_cast<float>(X) / 1000000*8)
 
@@ -71,16 +72,17 @@ protected:
    */
   float getWirelessSpeed(const char *ifa_name);
 
-  ros::NodeHandle nh_;                    //!< @brief ros node handle
-  ros::NodeHandle pnh_;                   //!< @brief private ros node handle
-  diagnostic_updater::Updater updater_;   //!< @brief Updater class which advertises to /diagnostics
+  ros::NodeHandle nh_;                      //!< @brief ros node handle
+  ros::NodeHandle pnh_;                     //!< @brief private ros node handle
+  diagnostic_updater::Updater updater_;     //!< @brief Updater class which advertises to /diagnostics
 
   char hostname_[HOST_NAME_MAX+1];          //!< @brief host name
   std::map<std::string, bytes> bytes_;      //!< @brief list of bytes
   ros::Time last_update_time_;              //!< @brief last update time
   std::vector<std::string> device_params_;  //!< @brief list of devices
+  NL80211 nl80211_;                         // !< @brief 802.11 netlink-based interface
 
-  float usage_warn_;                      //!< @brief Memory usage(%) to generate warning
+  float usage_warn_;                        //!< @brief Memory usage(%) to generate warning
 
   /**
    * @brief Network usage status messages
