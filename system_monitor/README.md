@@ -72,11 +72,6 @@ Every topic is published in 1 minute interval.
  See [ROS parameters](ros_parameters.md).
 
 # Notes
-## <u>CPU Monitor</u>
-CPU Monitor uses mpstat to monitor cpu utilization, so you need to install sysstat into your target system.
-```
-sudo apt install -y sysstat
-```
 
 ## <u>CPU monitor for intel platform</u>
 CPU Monitor which runs on intel platform reads contents of MSR(Model Specific Register) to monitor thermal throttling event.<br>
