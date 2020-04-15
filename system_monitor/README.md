@@ -113,14 +113,6 @@ Also you need to install S.M.A.R.T. Monitoring Tools into your target system.
 sudo apt install -y smartmontools
 ```
 
-## <u>NTP Monitor</u>
-NTP Monitor uses ntpdate to monitor NTP offset of given peer.
-
-You need to install ntpdate into your target system.
-```
-sudo apt install -y ntpdate
-```
-
 ## <u>GPU Monitor for intel platform</u>
 Currently GPU monitor for intel platform only supports NVIDIA GPU whose information can be accessed by NVML API.
 
