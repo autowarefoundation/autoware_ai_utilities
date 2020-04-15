@@ -22,7 +22,6 @@
 #include <algorithm>
 #include <string>
 #include <vector>
-#include <boost/foreach.hpp>
 #include <boost/format.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/process.hpp>
@@ -102,8 +101,8 @@ void CPUMonitor::getTempNames(void)
 {
   const fs::path root("/sys/devices/platform");
 
-  BOOST_FOREACH(const fs::path& path,
-    std::make_pair(fs::recursive_directory_iterator(root), fs::recursive_directory_iterator()))
+  for (const fs::path& path :
+    boost::make_iterator_range(fs::recursive_directory_iterator(root), fs::recursive_directory_iterator()))
   {
     if (fs::is_directory(path)) continue;
 

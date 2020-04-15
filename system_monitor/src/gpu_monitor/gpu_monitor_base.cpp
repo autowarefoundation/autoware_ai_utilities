@@ -22,7 +22,16 @@
 #include <system_monitor/gpu_monitor/gpu_monitor_base.h>
 
 GPUMonitorBase::GPUMonitorBase(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
-  : nh_(nh), pnh_(pnh)
+  : nh_(nh)
+  , pnh_(pnh)
+  , updater_()
+  , hostname_()
+  , temp_warn_(90.0)
+  , temp_error_(95.0)
+  , gpu_usage_warn_(0.90)
+  , gpu_usage_error_(1.00)
+  , memory_usage_warn_(0.95)
+  , memory_usage_error_(0.99)
 {
   gethostname(hostname_, sizeof(hostname_));
 

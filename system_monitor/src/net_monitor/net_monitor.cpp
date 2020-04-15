@@ -69,7 +69,7 @@ void NetMonitor::checkUsage(diagnostic_updater::DiagnosticStatusWrapper &stat)
   }
 
   const struct ifaddrs *ifa;
-  struct ifaddrs *ifas = NULL;
+  struct ifaddrs *ifas = nullptr;
 
   ros::Duration duration = ros::Time::now() - last_update_time_;
 

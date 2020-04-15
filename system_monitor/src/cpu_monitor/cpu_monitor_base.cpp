@@ -21,7 +21,6 @@
 
 #include <algorithm>
 #include <string>
-#include <boost/foreach.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/process.hpp>
 #include <boost/property_tree/json_parser.hpp>
@@ -34,7 +33,20 @@ namespace fs = boost::filesystem;
 namespace pt = boost::property_tree;
 
 CPUMonitorBase::CPUMonitorBase(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
-  : nh_(nh), pnh_(pnh)
+  : nh_(nh)
+  , pnh_(pnh)
+  , updater_()
+  , hostname_()
+  , num_cores_(0)
+  , temps_()
+  , freqs_()
+  , mpstat_exists_(false)
+  , temp_warn_(90.0)
+  , temp_error_(95.0)
+  , usage_warn_(0.90)
+  , usage_error_(1.00)
+  , load1_warn_(0.90)
+  , load5_warn_(0.80)
 {
   gethostname(hostname_, sizeof(hostname_));
   num_cores_ = boost::thread::hardware_concurrency();
@@ -150,15 +162,15 @@ void CPUMonitorBase::checkUsage(diagnostic_updater::DiagnosticStatusWrapper &sta
     // Analyze JSON output
     read_json(is_out, pt);
 
-    BOOST_FOREACH(const pt::ptree::value_type& child1, pt.get_child("sysstat.hosts"))
+    for (const pt::ptree::value_type& child1 : pt.get_child("sysstat.hosts"))
     {
       const pt::ptree& hosts = child1.second;
 
-      BOOST_FOREACH(const pt::ptree::value_type& child2, hosts.get_child("statistics"))
+      for (const pt::ptree::value_type& child2 : hosts.get_child("statistics"))
       {
         const pt::ptree& statistics = child2.second;
 
-        BOOST_FOREACH(const pt::ptree::value_type& child3, statistics.get_child("cpu-load"))
+        for (const pt::ptree::value_type& child3 : statistics.get_child("cpu-load"))
         {
           const pt::ptree& cpu_load = child3.second;
 
@@ -259,7 +271,7 @@ void CPUMonitorBase::getFreqNames(void)
 {
   const fs::path root("/sys/devices/system/cpu");
 
-  BOOST_FOREACH(const fs::path& path, std::make_pair(fs::directory_iterator(root), fs::directory_iterator()))
+  for (const fs::path& path : boost::make_iterator_range(fs::directory_iterator(root), fs::directory_iterator()))
   {
     if (!fs::is_directory(path)) continue;
 

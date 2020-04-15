@@ -30,7 +30,7 @@ CPUMonitor::CPUMonitor(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
 
 void CPUMonitor::checkThrottling(diagnostic_updater::DiagnosticStatusWrapper &stat)
 {
-  // TODO(me): implement me
+  // TODO(Fumihito Ito): implement me
 }
 
 void CPUMonitor::getTempNames(void)

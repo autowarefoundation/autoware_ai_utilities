@@ -125,7 +125,7 @@ void GPUMonitor::checkUsage(diagnostic_updater::DiagnosticStatusWrapper &stat)
 
 void GPUMonitor::checkThrottling(diagnostic_updater::DiagnosticStatusWrapper &stat)
 {
-  // TODO(me): implement me
+  // TODO(Fumihito Ito): implement me
 }
 
 void GPUMonitor::checkFrequency(diagnostic_updater::DiagnosticStatusWrapper &stat)
@@ -169,7 +169,7 @@ void GPUMonitor::getLoadNames(void)
 {
   const fs::path root("/sys/devices");
 
-  BOOST_FOREACH(const fs::path& path, std::make_pair(fs::directory_iterator(root), fs::directory_iterator()))
+  for (const fs::path& path : std::make_pair(fs::directory_iterator(root), fs::directory_iterator()))
   {
     if (!fs::is_directory(path)) continue;
 
@@ -190,7 +190,7 @@ void GPUMonitor::getFreqNames(void)
 {
   const fs::path root("/sys/class/devfreq");
 
-  BOOST_FOREACH(const fs::path& path, std::make_pair(fs::directory_iterator(root), fs::directory_iterator()))
+  for (const fs::path& path : boost::make_iterator_range(fs::directory_iterator(root), fs::directory_iterator()))
   {
     // /sys/class/devfreq/?????/cur_freq ?
     if (!fs::is_directory(path)) continue;
