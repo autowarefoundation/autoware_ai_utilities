@@ -14,7 +14,6 @@
   <depend>roslint</depend>
   <depend>std_msgs</depend>
   <depend>libnl-3-dev</depend>
-  <exec_depend>smartmontools</exec_depend>
   <exec_depend>sysstat</exec_depend>
   <exec_depend>ntpdate</exec_depend>
 </package>
