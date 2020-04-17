@@ -14,7 +14,7 @@ This package provides the following nodes for monitoring system:
 
 ### Suppoted architecture
 * x86_64
-* ARM
+* arm64v8/aarch64
 
 ### Operation confirmed platform
 * PC system intel core i7
