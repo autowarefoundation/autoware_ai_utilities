@@ -14,8 +14,6 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
 )
 
-find_package(CUDA)
-
 set(ROSLINT_CPP_OPTS "--filter=-build/c++14")
 roslint_cpp()
 
@@ -32,17 +30,22 @@ catkin_package(
 
 ## Specify additional locations of header files
 
+find_path(NVML_INCLUDE_DIRS
+  NAMES nvml.h
+  PATHS /usr/local/cuda
+  PATH_SUFFIXES include
+)
+
 find_path(LIBNL3_INCLUDE_DIRS
   NAMES netlink/netlink.h
   PATH_SUFFIXES libnl3
 )
-
-if (CUDA_FOUND)
+if (NVML_INCLUDE_DIRS)
   include_directories(
     include
     ${catkin_INCLUDE_DIRS}
     ${LIBNL3_INCLUDE_DIRS}
-    ${CUDA_INCLUDE_DIRS}
+    ${NVML_INCLUDE_DIRS}
   )
 else()
   include_directories(
