@@ -14,6 +14,9 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
 )
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+find_package(NVML)
+
 set(ROSLINT_CPP_OPTS "--filter=-build/c++14")
 roslint_cpp()
 
@@ -30,17 +33,12 @@ catkin_package(
 
 ## Specify additional locations of header files
 
-find_path(NVML_INCLUDE_DIRS
-  NAMES nvml.h
-  PATHS /usr/local/cuda
-  PATH_SUFFIXES include
-)
-
 find_path(LIBNL3_INCLUDE_DIRS
   NAMES netlink/netlink.h
   PATH_SUFFIXES libnl3
 )
-if (NVML_INCLUDE_DIRS)
+
+if (NVML_FOUND)
   include_directories(
     include
     ${catkin_INCLUDE_DIRS}
@@ -75,11 +73,10 @@ else()
   set(CMAKE_CPU_PLATFORM "unknown")
 endif()
 
-find_library(NVML NAMES nvidia-ml) 
-if (NVML)
+if (NVML_FOUND)
   set(CMAKE_GPU_PLATFORM "nvml")
   ADD_DEFINITIONS(-D_GPU_NVML_)
-  set(GPU_LIBRARY nvidia-ml)
+  set(GPU_LIBRARY ${NVML_LIBRARIES})
 else()
   if (CMAKE_CPU_PLATFORM STREQUAL "tegra")
     set(CMAKE_GPU_PLATFORM "tegra")
