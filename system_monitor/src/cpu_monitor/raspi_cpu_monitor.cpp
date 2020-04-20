@@ -71,7 +71,7 @@ void CPUMonitor::getTempNames(void)
 {
   // thermal_zone0
   std::vector<thermal_zone> therms;
-  SystemMonitorUtility::getThermalZone("cpu-thermal", therms);
+  SystemMonitorUtility::getThermalZone("cpu-thermal", &therms);
 
   for (auto itr = therms.begin(); itr != therms.end(); ++itr)
   {

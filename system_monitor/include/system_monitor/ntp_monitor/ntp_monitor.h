@@ -45,9 +45,11 @@ protected:
 
   /**
    * @brief check NTP Offset
-   * @param [in] stat diagnostic status message
+   * @param [out] stat diagnostic message passed directly to diagnostic publish calls
+   * @note NOLINT syntax is needed since diagnostic_updater asks for a non-const reference
+   * to pass diagnostic message updated in this function to diagnostic publish calls.
    */
-  void checkOffset(diagnostic_updater::DiagnosticStatusWrapper &stat);  // NOLINT
+  void checkOffset(diagnostic_updater::DiagnosticStatusWrapper &stat);  // NOLINT(runtime/references)
 
   ros::NodeHandle nh_;                    //!< @brief ros node handle
   ros::NodeHandle pnh_;                   //!< @brief private ros node handle

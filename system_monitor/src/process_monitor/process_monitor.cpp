@@ -77,8 +77,8 @@ void ProcessMonitor::monitorProcesses(diagnostic_updater::DiagnosticStatusWrappe
     is_err >> os.rdbuf();
     stat.summary(DiagStatus::ERROR, "top error");
     stat.add("top", os.str().c_str());
-    setErrorContent(load_tasks_, "top error", "top", os.str().c_str());
-    setErrorContent(memory_tasks_, "top error", "top", os.str().c_str());
+    setErrorContent(&load_tasks_, "top error", "top", os.str().c_str());
+    setErrorContent(&memory_tasks_, "top error", "top", os.str().c_str());
     return;
   }
 
@@ -215,12 +215,12 @@ void ProcessMonitor::getHighLoadProcesses(const std::string &output)
   if (c.exit_code() != 0)
   {
     is_err >> os.rdbuf();
-    setErrorContent(load_tasks_, "echo error", "echo", os.str().c_str());
+    setErrorContent(&load_tasks_, "echo error", "echo", os.str().c_str());
     return;
   }
 
   // Get top-rated
-  getTopratedProcesses(load_tasks_, p);
+  getTopratedProcesses(&load_tasks_, &p);
 }
 
 void ProcessMonitor::getHighMemoryProcesses(const std::string &output)
@@ -238,7 +238,7 @@ void ProcessMonitor::getHighMemoryProcesses(const std::string &output)
     if (c.exit_code() != 0)
     {
       is_err >> os.rdbuf();
-      setErrorContent(memory_tasks_, "echo error", "echo", os.str().c_str());
+      setErrorContent(&memory_tasks_, "echo error", "echo", os.str().c_str());
       return;
     }
   }
@@ -251,30 +251,32 @@ void ProcessMonitor::getHighMemoryProcesses(const std::string &output)
     if (c.exit_code() != 0)
     {
       is_err >> os.rdbuf();
-      setErrorContent(memory_tasks_, "sort error", "sort", os.str().c_str());
+      setErrorContent(&memory_tasks_, "sort error", "sort", os.str().c_str());
       return;
     }
   }
 
   // Get top-rated
-  getTopratedProcesses(memory_tasks_, p2);
+  getTopratedProcesses(&memory_tasks_, &p2);
 }
 
-void ProcessMonitor::getTopratedProcesses(std::vector<std::shared_ptr<DiagTask>> &tasks, bp::pipe &p)
+void ProcessMonitor::getTopratedProcesses(std::vector<std::shared_ptr<DiagTask>> *tasks, bp::pipe *p)
 {
+  if (tasks == nullptr || p == nullptr) return;
+
   bp::ipstream is_out;
   bp::ipstream is_err;
   std::ostringstream os;
 
   bp::child c((boost::format("sed -n \"1,%1% p\"") % num_of_procs_).str(),
-    bp::std_out > is_out, bp::std_err > is_err, bp::std_in < p);
+    bp::std_out > is_out, bp::std_err > is_err, bp::std_in < *p);
 
   c.wait();
   // Failed to modify line
   if (c.exit_code() != 0)
   {
     is_err >> os.rdbuf();
-    setErrorContent(load_tasks_, "sed error", "sed", os.str().c_str());
+    setErrorContent(tasks, "sed error", "sed", os.str().c_str());
     return;
   }
 
@@ -287,28 +289,30 @@ void ProcessMonitor::getTopratedProcesses(std::vector<std::shared_ptr<DiagTask>>
     boost::trim_left(line);
     boost::split(list, line, boost::is_space(), boost::token_compress_on);
 
-    tasks[index]->setDiagnosticsStatus(DiagStatus::OK, "OK");
-    tasks[index]->setProcessId(list[0]);
-    tasks[index]->setUserName(list[1]);
-    tasks[index]->setPriority(list[2]);
-    tasks[index]->setNiceValue(list[3]);
-    tasks[index]->setVirtualImage(list[4]);
-    tasks[index]->setResidentSize(list[5]);
-    tasks[index]->setSharedMemSize(list[6]);
-    tasks[index]->setProcessStatus(list[7]);
-    tasks[index]->setCPUUsage(list[8]);
-    tasks[index]->setMemoryUsage(list[9]);
-    tasks[index]->setCPUTime(list[10]);
-    tasks[index]->setCommandName(list[11]);
+    tasks->at(index)->setDiagnosticsStatus(DiagStatus::OK, "OK");
+    tasks->at(index)->setProcessId(list[0]);
+    tasks->at(index)->setUserName(list[1]);
+    tasks->at(index)->setPriority(list[2]);
+    tasks->at(index)->setNiceValue(list[3]);
+    tasks->at(index)->setVirtualImage(list[4]);
+    tasks->at(index)->setResidentSize(list[5]);
+    tasks->at(index)->setSharedMemSize(list[6]);
+    tasks->at(index)->setProcessStatus(list[7]);
+    tasks->at(index)->setCPUUsage(list[8]);
+    tasks->at(index)->setMemoryUsage(list[9]);
+    tasks->at(index)->setCPUTime(list[10]);
+    tasks->at(index)->setCommandName(list[11]);
     ++index;
   }
 }
 
-void ProcessMonitor::setErrorContent(std::vector<std::shared_ptr<DiagTask>> &tasks,
+void ProcessMonitor::setErrorContent(std::vector<std::shared_ptr<DiagTask>> *tasks,
                                      const std::string &message,
                                      const std::string &error_command, const std::string &content)
 {
-  for (auto itr = tasks.begin(); itr != tasks.end(); ++itr)
+  if (tasks == nullptr) return;
+
+  for (auto itr = tasks->begin(); itr != tasks->end(); ++itr)
   {
     (*itr)->setDiagnosticsStatus(DiagStatus::ERROR, message);
     (*itr)->setErrorContent(error_command, content);

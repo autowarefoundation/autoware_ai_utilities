@@ -45,9 +45,11 @@ protected:
 
   /**
    * @brief check Memory usage
-   * @param [in] stat diagnostic status message
+   * @param @param [out] stat diagnostic message passed directly to diagnostic publish calls
+   * @note NOLINT syntax is needed since diagnostic_updater asks for a non-const reference
+   * to pass diagnostic message updated in this function to diagnostic publish calls.
    */
-  void checkUsage(diagnostic_updater::DiagnosticStatusWrapper &stat);   // NOLINT
+  void checkUsage(diagnostic_updater::DiagnosticStatusWrapper &stat);   // NOLINT(runtime/references)
 
   /**
    * @brief get human-readable output for memory size

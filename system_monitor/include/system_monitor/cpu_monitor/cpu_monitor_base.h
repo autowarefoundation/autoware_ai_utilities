@@ -82,33 +82,41 @@ protected:
 
   /**
    * @brief check CPU temperature
-   * @param [in] stat diagnostic status message
+   * @param [out] stat diagnostic message passed directly to diagnostic publish calls
+   * @note NOLINT syntax is needed since diagnostic_updater asks for a non-const reference
+   * to pass diagnostic message updated in this function to diagnostic publish calls.
    */
-  virtual void checkTemp(diagnostic_updater::DiagnosticStatusWrapper &stat);    // NOLINT
+  virtual void checkTemp(diagnostic_updater::DiagnosticStatusWrapper &stat);    // NOLINT(runtime/references)
 
   /**
    * @brief check CPU usage
-   * @param [in] stat diagnostic status message
+   * @param [out] stat diagnostic message passed directly to diagnostic publish calls
+   * @note NOLINT syntax is needed since diagnostic_updater asks for a non-const reference
+   * to pass diagnostic message updated in this function to diagnostic publish calls.
    */
-  virtual void checkUsage(diagnostic_updater::DiagnosticStatusWrapper &stat);   // NOLINT
+  virtual void checkUsage(diagnostic_updater::DiagnosticStatusWrapper &stat);   // NOLINT(runtime/references)
 
   /**
    * @brief check CPU load average
-   * @param [in] stat diagnostic status message
+   * @param [out] stat diagnostic message passed directly to diagnostic publish calls
+   * @note NOLINT syntax is needed since diagnostic_updater asks for a non-const reference
+   * to pass diagnostic message updated in this function to diagnostic publish calls.
    */
-  virtual void checkLoad(diagnostic_updater::DiagnosticStatusWrapper &stat);  // NOLINT
+  virtual void checkLoad(diagnostic_updater::DiagnosticStatusWrapper &stat);  // NOLINT(runtime/references)
 
   /**
    * @brief check CPU thermal throttling
-   * @param [in] stat diagnostic status message
+   * @param [out] stat diagnostic message passed directly to diagnostic publish calls
    */
-  virtual void checkThrottling(diagnostic_updater::DiagnosticStatusWrapper &stat);  // NOLINT
+  virtual void checkThrottling(diagnostic_updater::DiagnosticStatusWrapper &stat);  // NOLINT(runtime/references)
 
   /**
    * @brief check CPU frequency
-   * @param [in] stat diagnostic status message
+   * @param [out] stat diagnostic message passed directly to diagnostic publish calls
+   * @note NOLINT syntax is needed since diagnostic_updater asks for a non-const reference
+   * to pass diagnostic message updated in this function to diagnostic publish calls.
    */
-  virtual void checkFrequency(diagnostic_updater::DiagnosticStatusWrapper &stat);   // NOLINT
+  virtual void checkFrequency(diagnostic_updater::DiagnosticStatusWrapper &stat);   // NOLINT(runtime/references)
 
   ros::NodeHandle nh_;                    //!< @brief ros node handle
   ros::NodeHandle pnh_;                   //!< @brief private ros node handle

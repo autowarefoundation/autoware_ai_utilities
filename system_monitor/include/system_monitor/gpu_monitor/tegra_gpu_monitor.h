@@ -48,27 +48,35 @@ public:
 protected:
   /**
    * @brief check GPU temperature
-   * @param [in] stat diagnostic status message
+   * @param [out] stat diagnostic message passed directly to diagnostic publish calls
+   * @note NOLINT syntax is needed since diagnostic_updater asks for a non-const reference
+   * to pass diagnostic message updated in this function to diagnostic publish calls.
    */
-  void checkTemp(diagnostic_updater::DiagnosticStatusWrapper &stat) override;   // NOLINT
+  void checkTemp(diagnostic_updater::DiagnosticStatusWrapper &stat) override;   // NOLINT(runtime/references)
 
   /**
    * @brief check GPU usage
-   * @param [in] stat diagnostic status message
+   * @param [out] stat diagnostic message passed directly to diagnostic publish calls
+   * @note NOLINT syntax is needed since diagnostic_updater asks for a non-const reference
+   * to pass diagnostic message updated in this function to diagnostic publish calls.
    */
-  void checkUsage(diagnostic_updater::DiagnosticStatusWrapper &stat) override;  // NOLINT
+  void checkUsage(diagnostic_updater::DiagnosticStatusWrapper &stat) override;  // NOLINT(runtime/references)
 
   /**
    * @brief check GPU throttling
-   * @param [in] stat diagnostic status message
+   * @param [out] stat diagnostic message passed directly to diagnostic publish calls
+   * @note NOLINT syntax is needed since diagnostic_updater asks for a non-const reference
+   * to pass diagnostic message updated in this function to diagnostic publish calls.
    */
-  void checkThrottling(diagnostic_updater::DiagnosticStatusWrapper &stat) override;   // NOLINT
+  void checkThrottling(diagnostic_updater::DiagnosticStatusWrapper &stat) override;   // NOLINT(runtime/references)
 
   /**
    * @brief check GPU frequency
-   * @param [in] stat diagnostic status message
+   * @param [out] stat diagnostic message passed directly to diagnostic publish calls
+   * @note NOLINT syntax is needed since diagnostic_updater asks for a non-const reference
+   * to pass diagnostic message updated in this function to diagnostic publish calls.
    */
-  void checkFrequency(diagnostic_updater::DiagnosticStatusWrapper &stat) override;  // NOLINT
+  void checkFrequency(diagnostic_updater::DiagnosticStatusWrapper &stat) override;  // NOLINT(runtime/references)
 
   /**
    * @brief get names for gpu temperature files

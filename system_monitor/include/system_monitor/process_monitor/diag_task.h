@@ -37,6 +37,7 @@ public:
 
   /**
    * @brief main loop
+   * @param [out] stat diagnostic message passed directly to diagnostic publish calls
    */
   void run(diagnostic_updater::DiagnosticStatusWrapper &stat)
   {

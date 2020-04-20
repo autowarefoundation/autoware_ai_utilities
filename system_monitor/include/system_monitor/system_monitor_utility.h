@@ -22,6 +22,7 @@
  */
 
 #include <string>
+#include <vector>
 #include <boost/foreach.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
@@ -47,15 +48,18 @@ public:
   /**
    * @brief get thermal zone informaton
    * @param [in] t thermal zone name
-   * @return thermal zone informaton
+   * @param [in] pointer to thermal zone informaton
    */
-  static void getThermalZone(const std::string &t, std::vector<thermal_zone> &therm)  // NOLINT
+  static void getThermalZone(const std::string &t, std::vector<thermal_zone> *therm)
   {
-    therm.clear();
+    if (therm == nullptr) return;
+
+    therm->clear();
 
     const fs::path root("/sys/class/thermal");
 
-    BOOST_FOREACH(const fs::path& path, std::make_pair(fs::directory_iterator(root), fs::directory_iterator()))
+    for (const fs::path& path :
+      boost::make_iterator_range(std::make_pair(fs::directory_iterator(root), fs::directory_iterator())))
     {
       if (!fs::is_directory(path)) continue;
 
@@ -79,7 +83,7 @@ public:
       if (type != t) continue;
 
       const fs::path temp_path = path / "temp";
-      therm.emplace_back(t, path.filename().generic_string(), temp_path.generic_string());
+      therm->emplace_back(t, path.filename().generic_string(), temp_path.generic_string());
     }
   }
 };

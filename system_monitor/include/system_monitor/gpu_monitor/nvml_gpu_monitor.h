@@ -69,34 +69,43 @@ public:
 protected:
   /**
    * @brief check GPU temperature
-   * @param [in] stat diagnostic status message
+   * @param [out] stat diagnostic message passed directly to diagnostic publish calls
+   * @note NOLINT syntax is needed since diagnostic_updater asks for a non-const reference
+   * to pass diagnostic message updated in this function to diagnostic publish calls.
    */
-  void checkTemp(diagnostic_updater::DiagnosticStatusWrapper &stat) override;   // NOLINT
+  void checkTemp(diagnostic_updater::DiagnosticStatusWrapper &stat) override;   // NOLINT(runtime/references)
 
   /**
    * @brief check GPU usage
-   * @param [in] stat diagnostic status message
+   * @param [out] stat diagnostic message passed directly to diagnostic publish calls
+   * @note NOLINT syntax is needed since diagnostic_updater asks for a non-const reference
+   * to pass diagnostic message updated in this function to diagnostic publish calls.
    */
-  void checkUsage(diagnostic_updater::DiagnosticStatusWrapper &stat) override;  // NOLINT
+  void checkUsage(diagnostic_updater::DiagnosticStatusWrapper &stat) override;  // NOLINT(runtime/references)
 
   /**
    * @brief check GPU memory usage
-   * @param [in] stat diagnostic status message
+   * @param [out] stat diagnostic message passed directly to diagnostic publish calls
+   * @note NOLINT syntax is needed since diagnostic_updater asks for a non-const reference
+   * to pass diagnostic message updated in this function to diagnostic publish calls.
    */
-  void checkMemoryUsage(diagnostic_updater::DiagnosticStatusWrapper &stat) override;  // NOLINT
+  void checkMemoryUsage(diagnostic_updater::DiagnosticStatusWrapper &stat) override;  // NOLINT(runtime/references)
 
   /**
    * @brief check GPU throttling
-   * @param [in] stat diagnostic status message
+   * @param [out] stat diagnostic message passed directly to diagnostic publish calls
+   * @note NOLINT syntax is needed since diagnostic_updater asks for a non-const reference
+   * to pass diagnostic message updated in this function to diagnostic publish calls.
    */
-  void checkThrottling(diagnostic_updater::DiagnosticStatusWrapper &stat) override;   // NOLINT
+  void checkThrottling(diagnostic_updater::DiagnosticStatusWrapper &stat) override;   // NOLINT(runtime/references)
 
   /**
    * @brief get human-readable output for memory size
    * @param [in] size size with bytes
    * @return human-readable output
+   * @note NOLINT syntax is needed since struct nvmlMemory_t has unsigned long long values to return memory size.
    */
-  std::string toHumanReadable(unsigned long long size);   // NOLINT
+  std::string toHumanReadable(unsigned long long size);   // NOLINT(runtime/int)
 
   std::vector<gpu_info> gpus_;            //!< @brief list of gpus
 };

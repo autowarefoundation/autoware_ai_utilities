@@ -39,7 +39,7 @@ void CPUMonitor::getTempNames(void)
 {
   // Jetson TX1 TX2 Nano: thermal_zone1, Xavier: thermal_zone0
   std::vector<thermal_zone> therms;
-  SystemMonitorUtility::getThermalZone("CPU-therm", therms);
+  SystemMonitorUtility::getThermalZone("CPU-therm", &therms);
 
   for (auto itr = therms.begin(); itr != therms.end(); ++itr)
   {

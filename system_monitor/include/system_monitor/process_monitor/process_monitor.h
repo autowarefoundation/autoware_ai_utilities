@@ -49,23 +49,31 @@ protected:
 
   /**
    * @brief monitor processes
-   * @param [in] stat diagnostic status message
+   * @param [out] stat diagnostic message passed directly to diagnostic publish calls
+   * @note NOLINT syntax is needed since diagnostic_updater asks for a non-const reference
+   * to pass diagnostic message updated in this function to diagnostic publish calls.
    */
-  void monitorProcesses(diagnostic_updater::DiagnosticStatusWrapper &stat);   // NOLINT
+  void monitorProcesses(diagnostic_updater::DiagnosticStatusWrapper &stat);   // NOLINT(runtime/references)
 
   /**
    * @brief get task summary
-   * @param [in] stat diagnostic status message
+   * @param [out] stat diagnostic message passed directly to diagnostic publish calls
    * @param [in] output top command output
+   * @note NOLINT syntax is needed since diagnostic_updater asks for a non-const reference
+   * to pass diagnostic message updated in this function to diagnostic publish calls.
    */
-  void getTasksSummary(diagnostic_updater::DiagnosticStatusWrapper &stat, const std::string &output);   // NOLINT
+  void getTasksSummary
+    (diagnostic_updater::DiagnosticStatusWrapper &stat, const std::string &output);   // NOLINT(runtime/references)
 
   /**
    * @brief remove header
-   * @param [in] stat diagnostic status message
+   * @param [out] stat diagnostic message passed directly to diagnostic publish calls
    * @param [in] output top command output
+   * @note NOLINT syntax is needed since diagnostic_updater asks for a non-const reference
+   * to pass diagnostic message updated in this function to diagnostic publish calls.
    */
-  void removeHeader(diagnostic_updater::DiagnosticStatusWrapper &stat, std::string &output);  // NOLINT
+  void removeHeader
+    (diagnostic_updater::DiagnosticStatusWrapper &stat, std::string &output);  // NOLINT(runtime/references)
 
   /**
    * @brief get high load processes
@@ -84,7 +92,7 @@ protected:
    * @param [in] tasks list of diagnostics tasks for high load procs
    * @param [in] output top command output
    */
-  void getTopratedProcesses(std::vector<std::shared_ptr<DiagTask>> &tasks, bp::pipe &p);  // NOLINT
+  void getTopratedProcesses(std::vector<std::shared_ptr<DiagTask>> *tasks, bp::pipe *p);
 
   /**
    * @brief get top-rated processes
@@ -93,7 +101,8 @@ protected:
    * @param [in] error_command Error command
    * @param [in] content Error content
    */
-  void setErrorContent(std::vector<std::shared_ptr<DiagTask>> &tasks, const std::string &message, const std::string &error_command, const std::string &content);  // NOLINT
+  void setErrorContent(std::vector<std::shared_ptr<DiagTask>> *tasks, const std::string &message,
+                       const std::string &error_command, const std::string &content);
 
   ros::NodeHandle nh_;                                    //!< @brief ros node handle
   ros::NodeHandle pnh_;                                   //!< @brief private ros node handle
