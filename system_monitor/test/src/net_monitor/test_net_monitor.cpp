@@ -22,7 +22,7 @@
 #include <ros/ros.h>
 #include <system_monitor/net_monitor/net_monitor.h>
 
-#define DOCKER_ENV "/.dockerenv"
+static constexpr const char* DOCKER_ENV = "/.dockerenv";
 
 namespace fs = boost::filesystem;
 using DiagStatus = diagnostic_msgs::DiagnosticStatus;

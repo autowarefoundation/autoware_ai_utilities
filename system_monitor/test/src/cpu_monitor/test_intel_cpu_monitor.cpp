@@ -25,8 +25,8 @@
 #include <ros/ros.h>
 #include <system_monitor/cpu_monitor/intel_cpu_monitor.h>
 
-#define TEST_FILE "test"
-#define DOCKER_ENV "/.dockerenv"
+static constexpr const char* TEST_FILE = "test";
+static constexpr const char* DOCKER_ENV = "/.dockerenv";
 
 namespace fs = boost::filesystem;
 using DiagStatus = diagnostic_msgs::DiagnosticStatus;

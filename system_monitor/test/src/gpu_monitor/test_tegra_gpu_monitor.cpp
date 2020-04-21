@@ -21,7 +21,7 @@
 #include <ros/ros.h>
 #include <system_monitor/gpu_monitor/tegra_gpu_monitor.h>
 
-#define TEST_FILE "test"
+static constexpr const char* TEST_FILE = "test";
 
 namespace fs = boost::filesystem;
 using DiagStatus = diagnostic_msgs::DiagnosticStatus;
