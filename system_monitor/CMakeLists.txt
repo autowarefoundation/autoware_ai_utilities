@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(system_monitor)
 
-## Compile as C++14, supported in ROS Kinetic and newer
+## Compile as C++14, supported in ROS Melodic and newer
 add_compile_options(-std=c++14)
 
 ## Find catkin macros and libraries
@@ -86,7 +86,6 @@ else()
   endif()
 endif()
 
-message(STATUS "CUDA_FOUND: " ${CUDA_FOUND})
 message(STATUS "HOST_SYSTEM_VERSION: " ${CMAKE_HOST_SYSTEM_VERSION})
 message(STATUS "SYSTEM_PROCESSOR: " ${CMAKE_SYSTEM_PROCESSOR})
 message(STATUS "CPU PLATFORM: " ${CMAKE_CPU_PLATFORM})

@@ -24,7 +24,8 @@ This package provides the following nodes for monitoring system:
 ## How to use
 Use colcon build and launch in the same way as other packages.
 ```
-colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
+colcon build
+source install/setup.bash
 roslaunch system_monitor system_monitor.launch
 ```
 
