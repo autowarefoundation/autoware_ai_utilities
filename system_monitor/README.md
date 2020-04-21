@@ -37,13 +37,13 @@ If you build this package on intel platform, CPU monitor and GPU monitor which r
 
 Every topic is published in 1 minute interval.
 
-- [CPU Monitor](topics_cpu_monitor.md)
-- [HDD Monitor](topics_hdd_monitor.md)
-- [Mem Monitor](topics_mem_monitor.md)
-- [Net Monitor](topics_net_monitor.md)
-- [NTP Monitor](topics_ntp_monitor.md)
-- [Process Monitor](topics_process_monitor.md)
-- [GPU Monitor](topics_gpu_monitor.md)
+- [CPU Monitor](docs/topics_cpu_monitor.md)
+- [HDD Monitor](docs/topics_hdd_monitor.md)
+- [Mem Monitor](docs/topics_mem_monitor.md)
+- [Net Monitor](docs/topics_net_monitor.md)
+- [NTP Monitor](docs/topics_ntp_monitor.md)
+- [Process Monitor](docs/topics_process_monitor.md)
+- [GPU Monitor](docs/topics_gpu_monitor.md)
 
 [Usage] ✓：Supported, -：Not supported
 
@@ -70,7 +70,7 @@ Every topic is published in 1 minute interval.
 
 ## ROS parameters
 
- See [ROS parameters](ros_parameters.md).
+ See [ROS parameters](docs/ros_parameters.md).
 
 # Notes
 
@@ -116,6 +116,6 @@ Also you need to instal CUDA libraries.
 For installation instructions for CUDA 10.0, see [NVIDIA CUDA Installation Guide for Linux](https://docs.nvidia.com/cuda/archive/10.0/cuda-installation-guide-linux/index.html).
 
 # UML diagrams
- See [Class diagrams](class_diagrams.md).
- See [Sequence diagrams](seq_diagrams.md).
+ See [Class diagrams](docs/class_diagrams.md).
+ See [Sequence diagrams](docs/seq_diagrams.md).
 
