@@ -26,6 +26,7 @@
 #include <boost/foreach.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
+#include <boost/range.hpp>
 #include <boost/regex.hpp>
 
 namespace fs = boost::filesystem;
@@ -58,8 +59,7 @@ public:
 
     const fs::path root("/sys/class/thermal");
 
-    for (const fs::path& path :
-      boost::make_iterator_range(std::make_pair(fs::directory_iterator(root), fs::directory_iterator())))
+    for (const fs::path& path : boost::make_iterator_range(fs::directory_iterator(root), fs::directory_iterator()))
     {
       if (!fs::is_directory(path)) continue;
 

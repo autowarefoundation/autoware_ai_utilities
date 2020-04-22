@@ -169,7 +169,7 @@ void GPUMonitor::getLoadNames(void)
 {
   const fs::path root("/sys/devices");
 
-  for (const fs::path& path : std::make_pair(fs::directory_iterator(root), fs::directory_iterator()))
+  for (const fs::path& path : boost::make_iterator_range(fs::directory_iterator(root), fs::directory_iterator()))
   {
     if (!fs::is_directory(path)) continue;
 
