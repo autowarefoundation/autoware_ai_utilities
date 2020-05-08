@@ -12,6 +12,7 @@ cpu_monitor:
 | usage_error | float | %(1e-2) | 1.00 | Generates error when CPU usage reaches a specified value or higher. |
 | load1_warn | float | %(1e-2) | 0.90 | Generates warning when load average 1min reaches a specified value or higher. |
 | load5_warn | float |  %(1e-2) | 0.80 | Generates warning when load average 5min reaches a specified value or higher. |
+| msr_reader_port | int | n/a | 7634 | Port number to connect to msr_reader. |
 
 ## <u>HDD Monitor</u>
 
@@ -29,6 +30,7 @@ hdd_monitor:
 
 | Name | Type | Unit | Default | Notes |
 | :---- | :---: | :---: | :---: | :--- |
+| hdd_reader_port | int | n/a | 7635 | Port number to connect to hdd_reader. |
 | usage_warn | float | %(1e-2) | 0.95 | Generates warning when disk usage reaches a specified value or higher. |
 | usage_error | float | %(1e-2) | 0.99 | Generates error when disk usage reaches a specified value or higher. |
 

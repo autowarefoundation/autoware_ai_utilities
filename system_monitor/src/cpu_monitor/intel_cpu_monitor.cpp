@@ -22,61 +22,112 @@
 #include <algorithm>
 #include <string>
 #include <vector>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <boost/algorithm/string.hpp>
+#include <boost/archive/text_iarchive.hpp>
 #include <boost/format.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/process.hpp>
 #include <boost/regex.hpp>
+#include <msr_reader/msr_reader.h>
 #include <system_monitor/cpu_monitor/intel_cpu_monitor.h>
 
 namespace fs = boost::filesystem;
-namespace bp = boost::process;
 
 CPUMonitor::CPUMonitor(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
   : CPUMonitorBase(nh, pnh)
 {
-  modprobeMSR();
-
-  // Check if command exists
-  fs::path p = bp::search_path("rdmsr");
-  rdmsr_exists_ = (p.empty()) ? false : true;
+  pnh_.param<int>("msr_reader_port", msr_reader_port_, 7634);
 }
 
 void CPUMonitor::checkThrottling(diagnostic_updater::DiagnosticStatusWrapper &stat)
 {
-  if (!rdmsr_exists_)
+  // Create a new socket
+  int sock = socket(AF_INET, SOCK_STREAM, 0);
+  if (sock < 0)
   {
-    stat.summary(DiagStatus::ERROR, "rdmsr error");
-    stat.add("rdmsr", "Command 'rdmsr' not found, but can be installed with: sudo apt install msrtools");
+    stat.summary(DiagStatus::ERROR, "socket error");
+    stat.add("socket", strerror(errno));
     return;
   }
 
-  // Read Pkg Thermal Status
-  bp::ipstream is_out;
-  bp::ipstream is_err;
-  bp::child c("sudo rdmsr -af 0:0 0x1b1", bp::std_out > is_out, bp::std_err > is_err);
-  c.wait();
-
-  if (c.exit_code() != 0)
+  // Specify the receiving timeouts until reporting an error
+  struct timeval tv;
+  tv.tv_sec = 10;
+  tv.tv_usec = 0;
+  int ret = setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
+  if (ret < 0)
   {
-    std::ostringstream os;
-    is_err >> os.rdbuf();
-    stat.summary(DiagStatus::ERROR, "rdmsr error");
-    stat.add("rdmsr", os.str().c_str());
+    stat.summary(DiagStatus::ERROR, "setsockopt error");
+    stat.add("setsockopt", strerror(errno));
+    close(sock);
     return;
   }
 
-  std::string line;
-  std::vector<bool> vals;
-  while (std::getline(is_out, line) && !line.empty())
+  // Connect the socket referred to by the file descriptor
+  sockaddr_in addr;
+  memset(&addr, 0, sizeof(sockaddr_in));
+  addr.sin_family = AF_INET;
+  addr.sin_port = htons(msr_reader_port_);
+  addr.sin_addr.s_addr = htonl(INADDR_ANY);
+  ret = connect(sock, (struct sockaddr*)&addr, sizeof(addr));
+  if (ret < 0)
   {
-    vals.push_back(std::stoi(line));
+    stat.summary(DiagStatus::ERROR, "connect error");
+    stat.add("connect", strerror(errno));
+    close(sock);
+    return;
   }
 
-  // modprobe error
-  if (vals.empty())
+  // Receive messages from a socket
+  char buf[1024] = "";
+  ret = recv(sock, buf, sizeof(buf)-1, 0);
+  if (ret < 0)
   {
-    stat.summary(DiagStatus::ERROR, "rdmsr error");
-    stat.add("rdmsr", "rdmsr gives empty result");
+    stat.summary(DiagStatus::ERROR, "recv error");
+    stat.add("recv", strerror(errno));
+    close(sock);
+    return;
+  }
+  // No data received
+  if (ret == 0)
+  {
+    stat.summary(DiagStatus::ERROR, "recv error");
+    stat.add("recv", "No data received");
+    close(sock);
+    return;
+  }
+
+  // Close the file descriptor FD
+  ret = close(sock);
+  if (ret < 0)
+  {
+    stat.summary(DiagStatus::ERROR, "close error");
+    stat.add("close", strerror(errno));
+    return;
+  }
+
+  // Restore MSR information
+  MSRInfo info;
+
+  try
+  {
+    std::istringstream iss(buf);
+    boost::archive::text_iarchive oa(iss);
+    oa >> info;
+  }
+  catch (const std::exception& e)
+  {
+    stat.summary(DiagStatus::ERROR, "recv error");
+    stat.add("recv", e.what());
+    return;
+  }
+
+  // msr_reader returns an error
+  if (info.error_code_ != 0)
+  {
+    stat.summary(DiagStatus::ERROR, "msr_reader error");
+    stat.add("msr_reader", strerror(info.error_code_));
     return;
   }
 
@@ -84,7 +135,7 @@ void CPUMonitor::checkThrottling(diagnostic_updater::DiagnosticStatusWrapper &st
   int whole_level = DiagStatus::OK;
   int index = 0;
 
-  for (auto itr = vals.begin(); itr != vals.end(); ++itr, ++index)
+  for (auto itr = info.pkg_thermal_status_.begin(); itr != info.pkg_thermal_status_.end(); ++itr, ++index)
   {
     if (*itr) level = DiagStatus::ERROR;
     else level = DiagStatus::OK;
@@ -140,19 +191,4 @@ void CPUMonitor::getTempNames(void)
       return n1 < n2;
     }
   );  // NOLINT
-}
-
-void CPUMonitor::modprobeMSR()
-{
-  bp::ipstream is_out;
-  bp::ipstream is_err;
-  bp::child c("sudo modprobe msr", bp::std_out > is_out, bp::std_err > is_err);
-  c.wait();
-
-  if (c.exit_code() != 0)
-  {
-    std::ostringstream os;
-    is_err >> os.rdbuf();
-    ROS_ERROR("modprobe error: %s", os.str().c_str());
-  }
 }

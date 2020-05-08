@@ -23,27 +23,23 @@
 #include <string>
 #include <vector>
 #include <boost/algorithm/string.hpp>
-#include <boost/filesystem.hpp>
+#include <boost/archive/text_iarchive.hpp>
 #include <boost/format.hpp>
 #include <boost/process.hpp>
-#include <boost/regex.hpp>
+#include <hdd_reader/hdd_reader.h>
 #include <system_monitor/hdd_monitor/hdd_monitor.h>
 
 namespace bp = boost::process;
-namespace fs = boost::filesystem;
 
 HDDMonitor::HDDMonitor(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
   : nh_(nh), pnh_(pnh)
 {
   gethostname(hostname_, sizeof(hostname_));
 
-  // Check if command exists
-  fs::path p = bp::search_path("smartctl");
-  smartctl_exists_ = (p.empty()) ? false : true;
-
   getTempParams();
   pnh_.param<float>("usage_warn", usage_warn_, 0.9);
   pnh_.param<float>("usage_error", usage_error_, 1.1);
+  pnh_.param<int>("hdd_reader_port", hdd_reader_port_, 7635);
 
   updater_.setHardwareID(hostname_);
   updater_.add("HDD Temperature", this, &HDDMonitor::checkTemp);
@@ -70,10 +66,84 @@ void HDDMonitor::checkTemp(diagnostic_updater::DiagnosticStatusWrapper &stat)
     return;
   }
 
-  if (!smartctl_exists_)
+  // Create a new socket
+  int sock = socket(AF_INET, SOCK_STREAM, 0);
+  if (sock < 0)
   {
-    stat.summary(DiagStatus::ERROR, "smartctl error");
-    stat.add("smartctl", "Command 'smartctl' not found, but can be installed with: sudo apt install smartmontools");
+    stat.summary(DiagStatus::ERROR, "socket error");
+    stat.add("socket", strerror(errno));
+    return;
+  }
+
+  // Specify the receiving timeouts until reporting an error
+  struct timeval tv;
+  tv.tv_sec = 10;
+  tv.tv_usec = 0;
+  int ret = setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
+  if (ret < 0)
+  {
+    stat.summary(DiagStatus::ERROR, "setsockopt error");
+    stat.add("setsockopt", strerror(errno));
+    close(sock);
+    return;
+  }
+
+  // Connect the socket referred to by the file descriptor
+  sockaddr_in addr;
+  memset(&addr, 0, sizeof(sockaddr_in));
+  addr.sin_family = AF_INET;
+  addr.sin_port = htons(hdd_reader_port_);
+  addr.sin_addr.s_addr = htonl(INADDR_ANY);
+  ret = connect(sock, (struct sockaddr*)&addr, sizeof(addr));
+  if (ret < 0)
+  {
+    stat.summary(DiagStatus::ERROR, "connect error");
+    stat.add("connect", strerror(errno));
+    close(sock);
+    return;
+  }
+
+  // Receive messages from a socket
+  char buf[1024] = "";
+  ret = recv(sock, buf, sizeof(buf)-1, 0);
+  if (ret < 0)
+  {
+    stat.summary(DiagStatus::ERROR, "recv error");
+    stat.add("recv", strerror(errno));
+    close(sock);
+    return;
+  }
+  // No data received
+  if (ret == 0)
+  {
+    stat.summary(DiagStatus::ERROR, "recv error");
+    stat.add("recv", "No data received");
+    close(sock);
+    return;
+  }
+
+  // Close the file descriptor FD
+  ret = close(sock);
+  if (ret < 0)
+  {
+    stat.summary(DiagStatus::ERROR, "close error");
+    stat.add("close", strerror(errno));
+    return;
+  }
+
+  // Restore HDD information list
+  HDDInfoList list;
+
+  try
+  {
+    std::istringstream iss(buf);
+    boost::archive::text_iarchive oa(iss);
+    oa >> list;
+  }
+  catch (const std::exception& e)
+  {
+    stat.summary(DiagStatus::ERROR, "recv error");
+    stat.add("recv", e.what());
     return;
   }
 
@@ -82,48 +152,29 @@ void HDDMonitor::checkTemp(diagnostic_updater::DiagnosticStatusWrapper &stat)
   int index = 0;
   std::string error_str = "";
 
-  boost::smatch match;
-  const boost::regex fmodel_number("^Model Number:\\s+(.*)");
-  const boost::regex fdevice_model("^Device Model:\\s+(.*)");
-  const boost::regex fserial_number("^Serial Number:\\s+(.*)");
-  const boost::regex ftemperature("^Temperature:\\s+(.*)");
-  const boost::regex ftemperature_c(".*Temperature_Celsius.*\\s(\\d+)$");
-
   for (auto itr = temp_params_.begin(); itr != temp_params_.end(); ++itr, ++index)
   {
-    // Get SMART information about the disk
-    bp::ipstream is_out;
-    bp::ipstream is_err;
-    bp::child c((boost::format("sudo smartctl -a %1%") % itr->first).str(), bp::std_out > is_out, bp::std_err > is_err);
-    c.wait();
-    if (c.exit_code() != 0)
+    // Retrieve HDD information
+    auto itrh = list.find(itr->first);
+    if (itrh == list.end())
     {
-      std::ostringstream os;
-      is_err >> os.rdbuf();
-      stat.add((boost::format("HDD %1%: status") % index).str(), "smartctl error");
+      stat.add((boost::format("HDD %1%: status") % index).str(), "hdd_reader error");
       stat.add((boost::format("HDD %1%: name") % index).str(), itr->first.c_str());
-      stat.add((boost::format("HDD %1%: smartctl") % index).str(), os.str().c_str());
-      error_str = "smartctl error";
+      stat.add((boost::format("HDD %1%: hdd_reader") % index).str(), strerror(ENOENT));
+      error_str = "hdd_reader error";
       continue;
     }
 
-    std::string line;
-    std::string model;
-    std::string serial;
-    float temp;
-
-    while (std::getline(is_out, line))
+    if (itrh->second.error_code_ != 0)
     {
-      // INFORMATION SECTION: Model Number(NVMe) or Device Model(ATA)
-      if (boost::regex_match(line, match, fmodel_number) || boost::regex_match(line, match, fdevice_model))
-        model = match[1].str();
-      // INFORMATION SECTION: Serial Number
-      else if (boost::regex_match(line, match, fserial_number)) serial = match[1].str();
-      // INFORMATION SECTION: Temperature(NVMe)
-      else if (boost::regex_match(line, match, ftemperature)) temp = std::atof(match[1].str().c_str());
-      // SMART/Health Information: Temperature_Celsius RAW_VALUE(ATA)
-      else if (boost::regex_match(line, match, ftemperature_c)) temp = std::atof(match[1].str().c_str());
+      stat.add((boost::format("HDD %1%: status") % index).str(), "hdd_reader error");
+      stat.add((boost::format("HDD %1%: name") % index).str(), itr->first.c_str());
+      stat.add((boost::format("HDD %1%: hdd_reader") % index).str(), strerror(itrh->second.error_code_));
+      error_str = "hdd_reader error";
+      continue;
     }
+
+    float temp = static_cast<float>(itrh->second.temp_);
 
     level = DiagStatus::OK;
     if (temp >= itr->second.temp_error_) level = DiagStatus::ERROR;
@@ -131,8 +182,8 @@ void HDDMonitor::checkTemp(diagnostic_updater::DiagnosticStatusWrapper &stat)
 
     stat.add((boost::format("HDD %1%: status") % index).str(), temp_dict_.at(level));
     stat.add((boost::format("HDD %1%: name") % index).str(), itr->first.c_str());
-    stat.add((boost::format("HDD %1%: model") % index).str(), model.c_str());
-    stat.add((boost::format("HDD %1%: serial") % index).str(), serial.c_str());
+    stat.add((boost::format("HDD %1%: model") % index).str(), itrh->second.model_.c_str());
+    stat.add((boost::format("HDD %1%: serial") % index).str(), itrh->second.serial_.c_str());
     stat.addf((boost::format("HDD %1%: temperature") % index).str(), "%.1f DegC", temp);
 
     whole_level = std::max(whole_level, level);

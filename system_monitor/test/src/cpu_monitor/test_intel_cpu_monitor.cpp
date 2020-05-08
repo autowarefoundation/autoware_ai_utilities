@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
+#include <pthread.h>
 #include <fstream>
 #include <string>
 #include <vector>
 #include <boost/algorithm/string.hpp>
+#include <boost/archive/text_oarchive.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 #include <boost/process.hpp>
 #include <gtest/gtest.h>
 #include <ros/ros.h>
+#include <msr_reader/msr_reader.h>
 #include <system_monitor/cpu_monitor/intel_cpu_monitor.h>
 
 static constexpr const char* TEST_FILE = "test";
@@ -50,7 +53,6 @@ public:
   void clearFreqNames(void) { freqs_.clear(); }
 
   void setMpstatExists(bool mpstat_exists) { mpstat_exists_ = mpstat_exists; }
-  void setRdmsrExists(bool rdmsr_exists) { rdmsr_exists_ = rdmsr_exists; }
 
   void changeUsageWarn(float usage_warn) { usage_warn_ = usage_warn; }
   void changeUsageError(float usage_error) { usage_error_ = usage_error; }
@@ -142,6 +144,112 @@ protected:
     env["PATH"] = new_path;
   }
 };
+
+enum ThreadTestMode
+{
+  Normal = 0,
+  Throttling,
+  ReturnsError,
+  RecvTimeout,
+  RecvNoData,
+  FormatError,
+};
+
+bool stop_thread;
+pthread_mutex_t mutex;
+
+void* msr_reader(void *args)
+{
+  ThreadTestMode *mode = reinterpret_cast<ThreadTestMode*>(args);
+
+  // Create a new socket
+  int sock = socket(AF_INET, SOCK_STREAM, 0);
+  if (sock < 0) return nullptr;
+
+  // Allow address reuse
+  int ret = 0;
+  int opt = 1;
+  ret = setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<char*>(&opt), (socklen_t) sizeof(opt));
+  if (ret < 0) { close(sock); return nullptr; }
+
+  // Give the socket FD the local address ADDR
+  sockaddr_in addr;
+  memset(&addr, 0, sizeof(sockaddr_in));
+  addr.sin_family = AF_INET;
+  addr.sin_port = htons(7634);
+  addr.sin_addr.s_addr = htonl(INADDR_ANY);
+  ret = bind(sock, (struct sockaddr*)&addr, sizeof(addr));
+  if (ret < 0) { close(sock); return nullptr; }
+
+  // Prepare to accept connections on socket FD
+  ret = listen(sock, 5);
+  if (ret < 0) { close(sock); return nullptr; }
+
+  sockaddr_in client;
+  socklen_t len = sizeof(client);
+
+  // Await a connection on socket FD
+  int new_sock = accept(sock, reinterpret_cast<sockaddr*>(&client), &len);
+  if (new_sock < 0) { close(sock); return nullptr; }
+
+  ret = 0;
+  std::ostringstream oss;
+  boost::archive::text_oarchive oa(oss);
+  MSRInfo msr = {0};
+
+  switch (*mode)
+  {
+  case Normal:
+    msr.error_code_ = 0;
+    msr.pkg_thermal_status_.push_back(false);
+    oa << msr;
+    ret = write(new_sock, oss.str().c_str(), oss.str().length());
+    break;
+
+  case Throttling:
+    msr.error_code_ = 0;
+    msr.pkg_thermal_status_.push_back(true);
+    oa << msr;
+    ret = write(new_sock, oss.str().c_str(), oss.str().length());
+    break;
+
+  case ReturnsError:
+    msr.error_code_ = EACCES;
+    oa << msr;
+    ret = write(new_sock, oss.str().c_str(), oss.str().length());
+    break;
+
+  case RecvTimeout:
+    // Wait for recv timeout
+    while (true)
+    {
+      pthread_mutex_lock(&mutex);
+      if (stop_thread) break;
+      pthread_mutex_unlock(&mutex);
+      sleep(1);
+    }
+    break;
+
+  case RecvNoData:
+    // Send nothing, close socket immediately
+    break;
+
+  case FormatError:
+    // Send wrong data
+    oa << "test";
+    ret = write(new_sock, oss.str().c_str(), oss.str().length());
+    break;
+
+  default:
+    break;
+  }
+
+  // Close the file descriptor FD
+  close(new_sock);
+  close(sock);
+
+  return nullptr;
+}
 
 TEST_F(CPUMonitorTestSuite, tempWarnTest)
 {
@@ -556,17 +664,16 @@ TEST_F(CPUMonitorTestSuite, load5WarnTest)
 
 TEST_F(CPUMonitorTestSuite, throttlingTest)
 {
-  // Skip test if process runs inside docker
-  // This is workaround for the error:
-  // modprobe error: modprobe: ERROR: ../libkmod/libkmod.c:586 kmod_search_moddep()
-  // could not open moddep file '/lib/modules/4.19.78-coreos/modules.dep.bin'
-  // modprobe: FATAL: Module msr not found in directory /lib/modules/4.19.78-coreos
-  // This error can be resolved by mounting /lib/modules in docker,
-  // and also need to install msr-tools and set up passwordless sudo for rdmsr.
-  if (fs::exists(DOCKER_ENV)) return;
+  pthread_t th;
+  ThreadTestMode mode = Normal;
+  pthread_create(&th, nullptr, msr_reader, &mode);
+  // Wait for thread started
+  ros::WallDuration(0.1).sleep();
 
   // Publish topic
   monitor_->update();
+
+  pthread_join(th, NULL);
 
   // Give time to publish
   ros::WallDuration(0.5).sleep();
@@ -575,15 +682,147 @@ TEST_F(CPUMonitorTestSuite, throttlingTest)
   // Verify
   DiagStatus status;
   ASSERT_TRUE(monitor_->findDiagStatus("CPU Thermal Throttling", status));
-
   ASSERT_EQ(status.level, DiagStatus::OK);
 }
 
-TEST_F(CPUMonitorTestSuite, throttlingRdmsrNotFoundTest)
+TEST_F(CPUMonitorTestSuite, throttlingThrottlingTest)
 {
-  // Set flag false
-  monitor_->setRdmsrExists(false);
+  pthread_t th;
+  ThreadTestMode mode = Throttling;
+  pthread_create(&th, nullptr, msr_reader, &mode);
+  // Wait for thread started
+  ros::WallDuration(0.1).sleep();
 
+  // Publish topic
+  monitor_->update();
+
+  pthread_join(th, NULL);
+
+  // Give time to publish
+  ros::WallDuration(0.5).sleep();
+  ros::spinOnce();
+
+  // Verify
+  DiagStatus status;
+  ASSERT_TRUE(monitor_->findDiagStatus("CPU Thermal Throttling", status));
+  ASSERT_EQ(status.level, DiagStatus::ERROR);
+  ASSERT_STREQ(status.message.c_str(), "throttling");
+}
+
+TEST_F(CPUMonitorTestSuite, throttlingReturnsErrorTest)
+{
+  pthread_t th;
+  ThreadTestMode mode = ReturnsError;
+  pthread_create(&th, nullptr, msr_reader, &mode);
+  // Wait for thread started
+  ros::WallDuration(0.1).sleep();
+
+  // Publish topic
+  monitor_->update();
+
+  pthread_join(th, NULL);
+
+  // Give time to publish
+  ros::WallDuration(0.5).sleep();
+  ros::spinOnce();
+
+  // Verify
+  DiagStatus status;
+  std::string value;
+  ASSERT_TRUE(monitor_->findDiagStatus("CPU Thermal Throttling", status));
+  ASSERT_EQ(status.level, DiagStatus::ERROR);
+  ASSERT_STREQ(status.message.c_str(), "msr_reader error");
+  ASSERT_TRUE(findValue(status, "msr_reader", value));
+  ASSERT_STREQ(value.c_str(), strerror(EACCES));
+}
+
+TEST_F(CPUMonitorTestSuite, throttlingRecvTimeoutTest)
+{
+  pthread_t th;
+  ThreadTestMode mode = RecvTimeout;
+  pthread_create(&th, nullptr, msr_reader, &mode);
+  // Wait for thread started
+  ros::WallDuration(0.1).sleep();
+
+  // Publish topic
+  monitor_->update();
+
+  // Recv timeout occurs, thread is no longer needed
+  pthread_mutex_lock(&mutex);
+  stop_thread = true;
+  pthread_mutex_unlock(&mutex);
+  pthread_join(th, NULL);
+
+  // Give time to publish
+  ros::WallDuration(0.5).sleep();
+  ros::spinOnce();
+
+  // Verify
+  DiagStatus status;
+  std::string value;
+  ASSERT_TRUE(monitor_->findDiagStatus("CPU Thermal Throttling", status));
+  ASSERT_EQ(status.level, DiagStatus::ERROR);
+  ASSERT_STREQ(status.message.c_str(), "recv error");
+  ASSERT_TRUE(findValue(status, "recv", value));
+  ASSERT_STREQ(value.c_str(), strerror(EWOULDBLOCK));
+}
+
+TEST_F(CPUMonitorTestSuite, throttlingRecvNoDataTest)
+{
+  pthread_t th;
+  ThreadTestMode mode = RecvNoData;
+  pthread_create(&th, nullptr, msr_reader, &mode);
+  // Wait for thread started
+  ros::WallDuration(0.1).sleep();
+
+  // Publish topic
+  monitor_->update();
+
+  pthread_join(th, NULL);
+
+  // Give time to publish
+  ros::WallDuration(0.5).sleep();
+  ros::spinOnce();
+
+  // Verify
+  DiagStatus status;
+  std::string value;
+  ASSERT_TRUE(monitor_->findDiagStatus("CPU Thermal Throttling", status));
+  ASSERT_EQ(status.level, DiagStatus::ERROR);
+  ASSERT_STREQ(status.message.c_str(), "recv error");
+  ASSERT_TRUE(findValue(status, "recv", value));
+  ASSERT_STREQ(value.c_str(), "No data received");
+}
+
+TEST_F(CPUMonitorTestSuite, throttlingFormatErrorTest)
+{
+  pthread_t th;
+  ThreadTestMode mode = FormatError;
+  pthread_create(&th, nullptr, msr_reader, &mode);
+  // Wait for thread started
+  ros::WallDuration(0.1).sleep();
+
+  // Publish topic
+  monitor_->update();
+
+  pthread_join(th, NULL);
+
+  // Give time to publish
+  ros::WallDuration(0.5).sleep();
+  ros::spinOnce();
+
+  // Verify
+  DiagStatus status;
+  std::string value;
+  ASSERT_TRUE(monitor_->findDiagStatus("CPU Thermal Throttling", status));
+  ASSERT_EQ(status.level, DiagStatus::ERROR);
+  ASSERT_STREQ(status.message.c_str(), "recv error");
+  ASSERT_TRUE(findValue(status, "recv", value));
+  ASSERT_STREQ(value.c_str(), "input stream error");
+}
+
+TEST_F(CPUMonitorTestSuite, throttlingConnectErrorTest)
+{
   // Publish topic
   monitor_->update();
 
@@ -596,9 +835,9 @@ TEST_F(CPUMonitorTestSuite, throttlingRdmsrNotFoundTest)
   std::string value;
   ASSERT_TRUE(monitor_->findDiagStatus("CPU Thermal Throttling", status));
   ASSERT_EQ(status.level, DiagStatus::ERROR);
-  ASSERT_STREQ(status.message.c_str(), "rdmsr error");
-  ASSERT_TRUE(findValue(status, "rdmsr", value));
-  ASSERT_STREQ(value.c_str(), "Command 'rdmsr' not found, but can be installed with: sudo apt install msrtools");
+  ASSERT_STREQ(status.message.c_str(), "connect error");
+  ASSERT_TRUE(findValue(status, "connect", value));
+  ASSERT_STREQ(value.c_str(), strerror(ECONNREFUSED));
 }
 
 TEST_F(CPUMonitorTestSuite, freqTest)

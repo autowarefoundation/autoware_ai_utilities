@@ -75,39 +75,75 @@ Every topic is published in 1 minute interval.
 # Notes
 
 ## <u>CPU monitor for intel platform</u>
-CPU Monitor which runs on intel platform reads contents of MSR(Model Specific Register) to monitor thermal throttling event.<br>
-Kernel module 'msr' must be loaded into your target system, and accessing MSR is only allowed for root, 
-so you must set up passwordless sudo for some specific commands.
+Thermal throttling event can be monitored by reading contents of MSR(Model Specific Register), and accessing MSR is only allowed for root by default, so this package provides the following approach to minimize security risks as much as possible:<br>
+
+- Provide a small program named 'msr_reader' which accesses MSR and sends thermal throttling status to CPU monitor by using socket programming.
+- Run 'msr_reader' as a specific user instead of root.
+- CPU monitor is able to know the status as an unprivileged user since thermal throttling status is sent by socket communication.
+
+### Instructions before starting
+1. Create a user to run 'msr_reader'.
 ```
-sudo visudo
+sudo adduser <username>
 ```
 
-Add the following line to your /etc/sudoers. Replace 'username' with user name which runs system_monitor on your target system.
+2. Load kernel module 'msr' into your target system.<br>
+The path '/dev/cpu/CPUNUM/msr' appears.
 ```
-username ALL=(ALL) NOPASSWD: /sbin/modprobe msr,/usr/sbin/rdmsr -af 0\:0 0x1b1
+sudo modprobe msr
 ```
 
-Also you need to install MSR tools into your target system.
+3. Allow user to access MSR with read-only privilege using the Access Control List (ACL).
 ```
-sudo apt install -y msr-tools
+sudo setfacl -m u:<username>:r /dev/cpu/*/msr
 ```
+
+4. Assign capability to 'msr_reader' since msr kernel module requires rawio capability.
+```
+sudo setcap cap_sys_rawio=ep install/system_monitor/lib/system_monitor/msr_reader
+```
+
+5. Run 'msr_reader' as the user you created, and run system_monitor as a generic user.
+```
+su <username>
+install/system_monitor/lib/system_monitor/msr_reader 
+```
+
+### See also
+[msr_reader](docs/msr_reader.md)
 
 ## <u>HDD Monitor</u>
-HDD Monitor uses S.M.A.R.T. Monitoring Tools to monitor HDD temperature.<br>
-This is only allowed for root, so you must set up passwordless sudo.
+Generally, S.M.A.R.T. information is used to monitor HDD temperature, and normally accessing disk device node is allowed for root user or disk group.<br>
+As with the CPU monitor, this package provides an approach to minimize security risks as much as possible:<br>
+
+- Provide a small program named 'hdd_reader' which accesses S.M.A.R.T. information and sends HDD temperature to HDD monitor by using socket programming.
+- Run 'hdd_reader' as a specific user.
+- HDD monitor is able to know HDD temperature as an unprivileged user since HDD temperature is sent by socket communication.
+
+### Instructions before starting
+1. Create a user to run 'hdd_reader'.
 ```
-sudo visudo
+sudo adduser <username>
 ```
 
-Append the following command to NOPASSWD in your /etc/sudoers. Replace 'disk_name' with disk name to monitor temperature.
+2. Add user to the disk group.
 ```
-/usr/sbin/smartctl -a /dev/disk_name
+sudo usermod -a -G disk <username>
 ```
 
-Also you need to install S.M.A.R.T. Monitoring Tools into your target system.
+3. Assign capabilities to 'hdd_reader' since SCSI kernel module requires rawio capability to send ATA PASS-THROUGH (12) command and NVMe kernel module requires admin capability to send Admin Command.
 ```
-sudo apt install -y smartmontools
+sudo setcap 'cap_sys_rawio=ep cap_sys_admin=ep' install/system_monitor/lib/system_monitor/hdd_reader
 ```
+
+4. Run 'hdd_reader' as the user you created, and run system_monitor as a generic user.
+```
+su <username>
+install/system_monitor/lib/system_monitor/hdd_reader 
+```
+
+### See also
+[hdd_reader](docs/hdd_reader.md)
 
 ## <u>GPU Monitor for intel platform</u>
 Currently GPU monitor for intel platform only supports NVIDIA GPU whose information can be accessed by NVML API.

@@ -5,7 +5,9 @@ cpu_monitor:
   usage_error: 1.00
   load1_warn: 0.90
   load5_warn: 0.80
+  msr_reader_port: 7634
 hdd_monitor:
+  hdd_reader_port: 7635
   disks:
   - name: /dev/sda
     temp_warn: 55.0

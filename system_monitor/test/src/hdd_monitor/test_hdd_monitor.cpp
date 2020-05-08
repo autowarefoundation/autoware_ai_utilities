@@ -16,11 +16,13 @@
 
 #include <string>
 #include <boost/algorithm/string.hpp>
+#include <boost/archive/text_oarchive.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 #include <boost/process.hpp>
 #include <gtest/gtest.h>
 #include <ros/ros.h>
+#include <hdd_reader/hdd_reader.h>
 #include <system_monitor/hdd_monitor/hdd_monitor.h>
 
 namespace fs = boost::filesystem;
@@ -54,18 +56,8 @@ public:
   }
   void clearTempParams(void) { temp_params_.clear(); }
 
-  bool isDeviceExists(void) const
-  {
-    for (auto itr = temp_params_.begin(); itr != temp_params_.end(); ++itr)
-    {
-      if (!fs::exists(itr->first)) return false;
-    }
-  }
-
   void changeUsageWarn(float usage_warn) { usage_warn_ = usage_warn; }
   void changeUsageError(float usage_error) { usage_error_ = usage_error; }
-
-  void setSmartctlExists(bool mpstat_exists) { smartctl_exists_ = mpstat_exists; }
 
   void update(void) { updater_.force_update(); }
 
@@ -146,122 +138,326 @@ protected:
   }
 };
 
+enum ThreadTestMode
+{
+  Normal = 0,
+  Hot,
+  CriticalHot,
+  ReturnsError,
+  RecvTimeout,
+  RecvNoData,
+  FormatError,
+};
+
+bool stop_thread;
+pthread_mutex_t mutex;
+
+void* hdd_reader(void *args)
+{
+  ThreadTestMode *mode = reinterpret_cast<ThreadTestMode*>(args);
+
+  // Create a new socket
+  int sock = socket(AF_INET, SOCK_STREAM, 0);
+  if (sock < 0) return nullptr;
+
+  // Allow address reuse
+  int ret = 0;
+  int opt = 1;
+  ret = setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<char*>(&opt), (socklen_t) sizeof(opt));
+  if (ret < 0) { close(sock); return nullptr; }
+
+  // Give the socket FD the local address ADDR
+  sockaddr_in addr;
+  memset(&addr, 0, sizeof(sockaddr_in));
+  addr.sin_family = AF_INET;
+  addr.sin_port = htons(7635);
+  addr.sin_addr.s_addr = htonl(INADDR_ANY);
+  ret = bind(sock, (struct sockaddr*)&addr, sizeof(addr));
+  if (ret < 0) { close(sock); return nullptr; }
+
+  // Prepare to accept connections on socket FD
+  ret = listen(sock, 5);
+  if (ret < 0) { close(sock); return nullptr; }
+
+  sockaddr_in client;
+  socklen_t len = sizeof(client);
+
+  // Await a connection on socket FD
+  int new_sock = accept(sock, reinterpret_cast<sockaddr*>(&client), &len);
+  if (new_sock < 0) { close(sock); return nullptr; }
+
+  ret = 0;
+  std::ostringstream oss;
+  boost::archive::text_oarchive oa(oss);
+  HDDInfoList list;
+  HDDInfo info = {0};
+
+  switch (*mode)
+  {
+  case Normal:
+    info.error_code_ = 0;
+    info.temp_ = 40;
+    list["/dev/sda"] = info;
+    oa << list;
+    ret = write(new_sock, oss.str().c_str(), oss.str().length());
+    break;
+
+  case Hot:
+    info.error_code_ = 0;
+    info.temp_ = 55;
+    list["/dev/sda"] = info;
+    oa << list;
+    ret = write(new_sock, oss.str().c_str(), oss.str().length());
+    break;
+
+  case CriticalHot:
+    info.error_code_ = 0;
+    info.temp_ = 70;
+    list["/dev/sda"] = info;
+    oa << list;
+    ret = write(new_sock, oss.str().c_str(), oss.str().length());
+    break;
+
+  case ReturnsError:
+    info.error_code_ = EACCES;
+    list["/dev/sda"] = info;
+    oa << list;
+    ret = write(new_sock, oss.str().c_str(), oss.str().length());
+    break;
+
+  case RecvTimeout:
+    // Wait for recv timeout
+    while (true)
+    {
+      pthread_mutex_lock(&mutex);
+      if (stop_thread) break;
+      pthread_mutex_unlock(&mutex);
+      sleep(1);
+    }
+    break;
+
+  case RecvNoData:
+    // Send nothing, close socket immediately
+    break;
+
+  case FormatError:
+    // Send wrong data
+    oa << "test";
+    ret = write(new_sock, oss.str().c_str(), oss.str().length());
+    break;
+
+  default:
+    break;
+  }
+
+  // Close the file descriptor FD
+  close(new_sock);
+  close(sock);
+
+  return nullptr;
+}
+
+TEST_F(HDDMonitorTestSuite, tempNormalTest)
+{
+  pthread_t th;
+  ThreadTestMode mode = Normal;
+  pthread_create(&th, nullptr, hdd_reader, &mode);
+  // Wait for thread started
+  ros::WallDuration(0.1).sleep();
+
+  // Publish topic
+  monitor_->update();
+
+  pthread_join(th, NULL);
+
+  // Give time to publish
+  ros::WallDuration(0.5).sleep();
+  ros::spinOnce();
+
+  // Verify
+  DiagStatus status;
+  std::string value;
+  ASSERT_TRUE(monitor_->findDiagStatus("HDD Temperature", status));
+  ASSERT_EQ(status.level, DiagStatus::OK);
+}
+
 TEST_F(HDDMonitorTestSuite, tempWarnTest)
 {
-  // Skip test if no device specified in config
-  if (!monitor_->isDeviceExists()) return;
+  pthread_t th;
+  ThreadTestMode mode = Hot;
+  pthread_create(&th, nullptr, hdd_reader, &mode);
+  // Wait for thread started
+  ros::WallDuration(0.1).sleep();
 
-  // Verify normal behavior
-  {
-    // Publish topic
-    monitor_->update();
+  // Publish topic
+  monitor_->update();
 
-    // Give time to publish
-    ros::WallDuration(0.5).sleep();
-    ros::spinOnce();
+  pthread_join(th, NULL);
 
-    // Verify
-    DiagStatus status;
-    std::string value;
-    ASSERT_TRUE(monitor_->findDiagStatus("HDD Temperature", status));
-    ASSERT_EQ(status.level, DiagStatus::OK);
-    // Get temperature
-    ASSERT_TRUE(findValue(status, "HDD 0: temperature", value));
-  }
+  // Give time to publish
+  ros::WallDuration(0.5).sleep();
+  ros::spinOnce();
 
-  // Verify warning
-  {
-    // Change warning level
-    monitor_->changeTempParams(0.0 , 70.0);
-
-    // Publish topic
-    monitor_->update();
-
-    // Give time to publish
-    ros::WallDuration(0.5).sleep();
-    ros::spinOnce();
-
-    // Verify
-    DiagStatus status;
-    ASSERT_TRUE(monitor_->findDiagStatus("HDD Temperature", status));
-    ASSERT_EQ(status.level, DiagStatus::WARN);
-  }
-
-  // Verify normal behavior
-  {
-    // Change back to normal
-    monitor_->changeTempParams(55.0 , 70.0);
-
-    // Publish topic
-    monitor_->update();
-
-    // Give time to publish
-    ros::WallDuration(0.5).sleep();
-    ros::spinOnce();
-
-    // Verify
-    DiagStatus status;
-    ASSERT_TRUE(monitor_->findDiagStatus("HDD Temperature", status));
-    ASSERT_EQ(status.level, DiagStatus::OK);
-  }
+  // Verify
+  DiagStatus status;
+  std::string value;
+  ASSERT_TRUE(monitor_->findDiagStatus("HDD Temperature", status));
+  ASSERT_EQ(status.level, DiagStatus::WARN);
 }
 
 TEST_F(HDDMonitorTestSuite, tempErrorTest)
 {
-  // Skip test if no device specified in config
-  if (!monitor_->isDeviceExists()) return;
+  pthread_t th;
+  ThreadTestMode mode = CriticalHot;
+  pthread_create(&th, nullptr, hdd_reader, &mode);
+  // Wait for thread started
+  ros::WallDuration(0.1).sleep();
 
-  // Verify normal behavior
-  {
-    // Publish topic
-    monitor_->update();
+  // Publish topic
+  monitor_->update();
 
-    // Give time to publish
-    ros::WallDuration(0.5).sleep();
-    ros::spinOnce();
+  pthread_join(th, NULL);
 
-    // Verify
-    DiagStatus status;
-    std::string value;
-    ASSERT_TRUE(monitor_->findDiagStatus("HDD Temperature", status));
-    ASSERT_EQ(status.level, DiagStatus::OK);
-  }
+  // Give time to publish
+  ros::WallDuration(0.5).sleep();
+  ros::spinOnce();
 
-  // Verify error
-  {
-    // Change error level
-    monitor_->changeTempParams(55.0 , 0.0);
+  // Verify
+  DiagStatus status;
+  std::string value;
+  ASSERT_TRUE(monitor_->findDiagStatus("HDD Temperature", status));
+  ASSERT_EQ(status.level, DiagStatus::ERROR);
+}
 
-    // Publish topic
-    monitor_->update();
+TEST_F(HDDMonitorTestSuite, tempReturnsErrorTest)
+{
+  pthread_t th;
+  ThreadTestMode mode = ReturnsError;
+  pthread_create(&th, nullptr, hdd_reader, &mode);
+  // Wait for thread started
+  ros::WallDuration(0.1).sleep();
 
-    // Give time to publish
-    ros::WallDuration(0.5).sleep();
-    ros::spinOnce();
+  // Publish topic
+  monitor_->update();
 
-    // Verify
-    DiagStatus status;
-    ASSERT_TRUE(monitor_->findDiagStatus("HDD Temperature", status));
-    ASSERT_EQ(status.level, DiagStatus::ERROR);
-  }
+  pthread_join(th, NULL);
 
-  // Verify normal behavior
-  {
-    // Change back to normal
-    monitor_->changeTempParams(55.0 , 70.0);
+  // Give time to publish
+  ros::WallDuration(0.5).sleep();
+  ros::spinOnce();
 
-    // Publish topic
-    monitor_->update();
+  // Verify
+  DiagStatus status;
+  std::string value;
+  ASSERT_TRUE(monitor_->findDiagStatus("HDD Temperature", status));
+  ASSERT_EQ(status.level, DiagStatus::ERROR);
+  ASSERT_STREQ(status.message.c_str(), "hdd_reader error");
+  ASSERT_TRUE(findValue(status, "HDD 0: hdd_reader", value));
+  ASSERT_STREQ(value.c_str(), strerror(EACCES));
+}
 
-    // Give time to publish
-    ros::WallDuration(0.5).sleep();
-    ros::spinOnce();
+TEST_F(HDDMonitorTestSuite, tempRecvTimeoutTest)
+{
+  pthread_t th;
+  ThreadTestMode mode = RecvTimeout;
+  pthread_create(&th, nullptr, hdd_reader, &mode);
+  // Wait for thread started
+  ros::WallDuration(0.1).sleep();
 
-    // Verify
-    DiagStatus status;
-    ASSERT_TRUE(monitor_->findDiagStatus("HDD Temperature", status));
-    ASSERT_EQ(status.level, DiagStatus::OK);
-  }
+  // Publish topic
+  monitor_->update();
+
+  // Recv timeout occurs, thread is no longer needed
+  pthread_mutex_lock(&mutex);
+  stop_thread = true;
+  pthread_mutex_unlock(&mutex);
+  pthread_join(th, NULL);
+
+  // Give time to publish
+  ros::WallDuration(0.5).sleep();
+  ros::spinOnce();
+
+  // Verify
+  DiagStatus status;
+  std::string value;
+  ASSERT_TRUE(monitor_->findDiagStatus("HDD Temperature", status));
+  ASSERT_EQ(status.level, DiagStatus::ERROR);
+  ASSERT_STREQ(status.message.c_str(), "recv error");
+  ASSERT_TRUE(findValue(status, "recv", value));
+  ASSERT_STREQ(value.c_str(), strerror(EWOULDBLOCK));
+}
+
+TEST_F(HDDMonitorTestSuite, tempRecvNoDataTest)
+{
+  pthread_t th;
+  ThreadTestMode mode = RecvNoData;
+  pthread_create(&th, nullptr, hdd_reader, &mode);
+  // Wait for thread started
+  ros::WallDuration(0.1).sleep();
+
+  // Publish topic
+  monitor_->update();
+
+  pthread_join(th, NULL);
+
+  // Give time to publish
+  ros::WallDuration(0.5).sleep();
+  ros::spinOnce();
+
+  // Verify
+  DiagStatus status;
+  std::string value;
+  ASSERT_TRUE(monitor_->findDiagStatus("HDD Temperature", status));
+  ASSERT_EQ(status.level, DiagStatus::ERROR);
+  ASSERT_STREQ(status.message.c_str(), "recv error");
+  ASSERT_TRUE(findValue(status, "recv", value));
+  ASSERT_STREQ(value.c_str(), "No data received");
+}
+
+TEST_F(HDDMonitorTestSuite, tempFormatErrorTest)
+{
+  pthread_t th;
+  ThreadTestMode mode = FormatError;
+  pthread_create(&th, nullptr, hdd_reader, &mode);
+  // Wait for thread started
+  ros::WallDuration(0.1).sleep();
+
+  // Publish topic
+  monitor_->update();
+
+  pthread_join(th, NULL);
+
+  // Give time to publish
+  ros::WallDuration(0.5).sleep();
+  ros::spinOnce();
+
+  // Verify
+  DiagStatus status;
+  std::string value;
+  ASSERT_TRUE(monitor_->findDiagStatus("HDD Temperature", status));
+  ASSERT_EQ(status.level, DiagStatus::ERROR);
+  ASSERT_STREQ(status.message.c_str(), "recv error");
+  ASSERT_TRUE(findValue(status, "recv", value));
+  ASSERT_STREQ(value.c_str(), "input stream error");
+}
+
+TEST_F(HDDMonitorTestSuite, tempConnectErrorTest)
+{
+  // Publish topic
+  monitor_->update();
+
+  // Give time to publish
+  ros::WallDuration(0.5).sleep();
+  ros::spinOnce();
+
+  // Verify
+  DiagStatus status;
+  std::string value;
+  ASSERT_TRUE(monitor_->findDiagStatus("HDD Temperature", status));
+  ASSERT_EQ(status.level, DiagStatus::ERROR);
+  ASSERT_STREQ(status.message.c_str(), "connect error");
+  ASSERT_TRUE(findValue(status, "connect", value));
+  ASSERT_STREQ(value.c_str(), strerror(ECONNREFUSED));
 }
 
 TEST_F(HDDMonitorTestSuite, tempInvalidDiskParameterTest)
@@ -283,39 +479,21 @@ TEST_F(HDDMonitorTestSuite, tempInvalidDiskParameterTest)
   ASSERT_STREQ(status.message.c_str(), "invalid disk parameter");
 }
 
-TEST_F(HDDMonitorTestSuite, tempSmartctlNotFoundTest)
-{
-  // Set flag false
-  monitor_->setSmartctlExists(false);
-
-  // Publish topic
-  monitor_->update();
-
-  // Give time to publish
-  ros::WallDuration(0.5).sleep();
-  ros::spinOnce();
-
-  // Verify
-  DiagStatus status;
-  std::string value;
-  ASSERT_TRUE(monitor_->findDiagStatus("HDD Temperature", status));
-  ASSERT_EQ(status.level, DiagStatus::ERROR);
-  ASSERT_STREQ(status.message.c_str(), "smartctl error");
-  ASSERT_TRUE(findValue(status, "smartctl", value));
-  ASSERT_STREQ(value.c_str(),
-    "Command 'smartctl' not found, but can be installed with: sudo apt install smartmontools");
-}
-
 TEST_F(HDDMonitorTestSuite, tempNoSuchDeviceTest)
 {
-  // Skip test if no device specified in config
-  if (!monitor_->isDeviceExists()) return;
-
   // Add test file to list
   monitor_->addTempParams("/dev/sdx", 55.0, 77.0);
 
+  pthread_t th;
+  ThreadTestMode mode = Normal;
+  pthread_create(&th, nullptr, hdd_reader, &mode);
+  // Wait for thread started
+  ros::WallDuration(0.1).sleep();
+
   // Publish topic
   monitor_->update();
+
+  pthread_join(th, NULL);
 
   // Give time to publish
   ros::WallDuration(0.5).sleep();
@@ -326,18 +504,9 @@ TEST_F(HDDMonitorTestSuite, tempNoSuchDeviceTest)
   std::string value;
   ASSERT_TRUE(monitor_->findDiagStatus("HDD Temperature", status));
   ASSERT_EQ(status.level, DiagStatus::ERROR);
-  ASSERT_STREQ(status.message.c_str(), "smartctl error");
-
-  ASSERT_TRUE(findValue(status, "HDD 1: status", value));
-  ASSERT_STREQ(value.c_str(), "smartctl error");
-  ASSERT_TRUE(findValue(status, "HDD 1: name", value));
-  ASSERT_STREQ(value.c_str(), "/dev/sdx");
-  ASSERT_TRUE(findValue(status, "HDD 1: smartctl", value));
-  // 'sudo smartctl -a /dev/sdx' is no set to NOPASWD for sudoers, so we get the following error.
-  // sudo: no tty present and no askpass program specified\n
-  ASSERT_STREQ(value.c_str(), "sudo: no tty present and no askpass program specified\n");
-  // Unable to check below becasuse smartctl does not output anything to stderr when the above command set to NOPASSWD
-  // ASSERT_STREQ(value.c_str(), "Smartctl open device: /dev/sdx failed: No such device");
+  ASSERT_STREQ(status.message.c_str(), "hdd_reader error");
+  ASSERT_TRUE(findValue(status, "HDD 1: hdd_reader", value));
+  ASSERT_STREQ(value.c_str(), strerror(ENOENT));
 }
 
 TEST_F(HDDMonitorTestSuite, usageWarnTest)

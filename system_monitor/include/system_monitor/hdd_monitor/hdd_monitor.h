@@ -80,10 +80,10 @@ protected:
   diagnostic_updater::Updater updater_;           //!< @brief Updater class which advertises to /diagnostics
 
   char hostname_[HOST_NAME_MAX+1];                //!< @brief host name
-  bool smartctl_exists_;                          //!< @brief flag if smartctl exists
 
   float usage_warn_;                              //!< @brief HDD usage(%) to generate warning
   float usage_error_;                             //!< @brief HDD usage(%) to generate error
+  int hdd_reader_port_;                           //!< @brief port number to connect to hdd_reader
   std::map<std::string, TempParam> temp_params_;  //!< @brief list of error and warning levels
 
   /**

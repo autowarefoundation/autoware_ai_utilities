@@ -132,6 +132,14 @@ add_executable(gpu_monitor
   ${GPU_MONITOR_SOURCE}
 )
 
+add_executable(msr_reader
+  reader/msr_reader/msr_reader.cpp
+)
+
+add_executable(hdd_reader
+  reader/hdd_reader/hdd_reader.cpp
+)
+
 ## Add cmake target dependencies of the executable
 add_dependencies(cpu_monitor ${catkin_EXPORTED_TARGETS})
 add_dependencies(hdd_monitor ${catkin_EXPORTED_TARGETS})
@@ -140,19 +148,27 @@ add_dependencies(net_monitor ${catkin_EXPORTED_TARGETS})
 add_dependencies(ntp_monitor ${catkin_EXPORTED_TARGETS})
 add_dependencies(process_monitor ${catkin_EXPORTED_TARGETS})
 add_dependencies(gpu_monitor ${catkin_EXPORTED_TARGETS})
+add_dependencies(msr_reader ${catkin_EXPORTED_TARGETS})
+add_dependencies(hdd_reader ${catkin_EXPORTED_TARGETS})
 
 find_library(NL3 nl-3)
 find_library(NLGENL3 nl-genl-3)
 list(APPEND NL_LIBS ${NL3} ${NLGENL3})
 
+find_package(Boost REQUIRED COMPONENTS
+  serialization
+)
+
 ## Specify libraries to link a library or executable target against
-target_link_libraries(cpu_monitor ${catkin_LIBRARIES})
-target_link_libraries(hdd_monitor ${catkin_LIBRARIES})
+target_link_libraries(cpu_monitor ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(hdd_monitor ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 target_link_libraries(mem_monitor ${catkin_LIBRARIES})
 target_link_libraries(net_monitor ${catkin_LIBRARIES} ${NL_LIBS})
 target_link_libraries(ntp_monitor ${catkin_LIBRARIES})
 target_link_libraries(process_monitor ${catkin_LIBRARIES})
 target_link_libraries(gpu_monitor ${catkin_LIBRARIES} ${GPU_LIBRARY})
+target_link_libraries(msr_reader ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(hdd_reader ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
 #############
 ## Install ##
@@ -168,6 +184,8 @@ install(
     ntp_monitor
     process_monitor
     gpu_monitor
+    msr_reader
+    hdd_reader
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
@@ -199,14 +217,14 @@ if (CATKIN_ENABLE_TESTING)
     test/src/cpu_monitor/test_${CMAKE_CPU_PLATFORM}_cpu_monitor.cpp
     ${CPU_MONITOR_SOURCE}
   )
-  target_link_libraries(test_cpu_monitor ${catkin_LIBRARIES})
+  target_link_libraries(test_cpu_monitor ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
   add_rostest_gtest(test_hdd_monitor
     test/test_hdd_monitor.test
     test/src/hdd_monitor/test_hdd_monitor.cpp
     src/hdd_monitor/hdd_monitor.cpp
   )
-  target_link_libraries(test_hdd_monitor ${catkin_LIBRARIES})
+  target_link_libraries(test_hdd_monitor ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
   add_rostest_gtest(test_mem_monitor
     test/test_mem_monitor.test

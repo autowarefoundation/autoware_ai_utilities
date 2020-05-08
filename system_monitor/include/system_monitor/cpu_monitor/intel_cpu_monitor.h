@@ -52,7 +52,7 @@ protected:
    */
   void modprobeMSR(void);
 
-  bool rdmsr_exists_;  //!< @brief flag if rdmsr exists
+  int msr_reader_port_;  //!< @brief port number to connect to msr_reader
 };
 
 #endif  // SYSTEM_MONITOR_CPU_MONITOR_INTEL_CPU_MONITOR_H
