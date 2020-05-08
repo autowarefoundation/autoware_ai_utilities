@@ -22,6 +22,7 @@ Returns 0 if OK; non-zero otherwise.
 ## Notes
 The 'msr_reader' accesses minimal data enough to get thermal throttling event.<br>
 This is an approach to limit its functionality, however, the functionality can be expanded for further improvements and considerations in the future.
+
 | Register Address | Name | Length |
 | --- | --- | --- |
 | 1B1H | IA32_PACKAGE_THERM_STATUS | 64bit |
