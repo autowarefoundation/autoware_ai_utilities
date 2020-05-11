@@ -26,13 +26,13 @@
 CPUMonitor::CPUMonitor(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
   : CPUMonitorBase(nh, pnh)
 {
+  // There is no event record for thermal throttling.
+  // Need to manually monitor temperature to figure out if thermal limits crossed or not.
+  updater_.removeByName("CPU Thermal Throttling");
 }
 
 void CPUMonitor::checkThrottling(diagnostic_updater::DiagnosticStatusWrapper &stat)
 {
-  // There is no event record for thermal throttling.
-  // Need to manually monitor temperature to figure out if thermal limits crossed or not.
-  updater_.removeByName("CPU Thermal Throttling");
 }
 
 void CPUMonitor::getTempNames(void)
