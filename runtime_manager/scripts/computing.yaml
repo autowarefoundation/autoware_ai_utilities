@@ -4323,14 +4323,6 @@ params :
       cmd_param :
         dash        : ''
         delim       : ':='
-    - name      : overwrite_vmax_mode
-      desc      : Enavle overwrite velocity max mode
-      label     : overwrite velocity max mode
-      kind      : checkbox
-      v         : false
-      cmd_param :
-        dash        : ''
-        delim       : ':='
     - name      : replan_endpoint_mode
       desc      : Enable replan endpoint mode
       label     : replan endpoint mode
@@ -4343,15 +4335,6 @@ params :
       desc      : All velocities are limited under Vmax [km/h]
       label     : Velocity Max Limit - Vmax [km/h]
       min       : 0.1
-      max       : 100.0
-      v         : 20.0
-      cmd_param :
-        dash        : ''
-        delim       : ':='
-    - name      : radius_thresh
-      desc      : When the estimated turning radius > Rth [m], the area is recognized as a curve
-      label     : Curve Recognize - Rth [m]
-      min       : 10.0
       max       : 100.0
       v         : 20.0
       cmd_param :
@@ -4393,30 +4376,12 @@ params :
       cmd_param :
         dash        : ''
         delim       : ':='
-    - name      : velocity_offset
-      desc      : Planned velocity offset for the response delay
-      label     : Velocity Offset
-      min       : 0
-      max       : 30
-      v         : 4
-      cmd_param :
-        dash        : ''
-        delim       : ':='
-    - name      : braking_distance
-      desc      : braking distance (v = vmin) for safe stopping
-      label     : Braking Distance
-      min       : 0
-      max       : 10
-      v         : 5
-      cmd_param :
-        dash        : ''
-        delim       : ':='
-    - name      : end_point_offset
-      desc      : Expanded end points (v = 0) for safe stopping
-      label     : End Point Offset
-      min       : 0
-      max       : 2
-      v         : 1
+    - name      : lateral_accel_limit
+      desc      : Maximum value of lateral acceleration
+      label     : Lateral acceleration limit [m/s^2]
+      min       : 0.0
+      max       : 3.0
+      v         : 2.0
       cmd_param :
         dash        : ''
         delim       : ':='
