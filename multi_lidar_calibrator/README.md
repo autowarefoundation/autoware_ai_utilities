@@ -17,7 +17,7 @@ Using rosrun
 
 Using roslaunch
 
-`roslaunch multi_lidar_calibrator multi_lidar_calibrator points_child_src:=/lidar_child/points_raw points_parent_src:=/lidar_parent/points_raw x:=0.0 y:=0.0 z:=0.0 roll:=0.0 pitch:=0.0 yaw:=0.0`
+`roslaunch multi_lidar_calibrator multi_lidar_calibrator.launch points_child_src:=/lidar_child/points_raw points_parent_src:=/lidar_parent/points_raw x:=0.0 y:=0.0 z:=0.0 roll:=0.0 pitch:=0.0 yaw:=0.0`
 
 3. Play a rosbag with both lidar data `/lidar_child/points_raw` and `/lidar_parent/points_raw`
 
@@ -49,7 +49,7 @@ Using roslaunch
 
 ## Output
 
-1. Child Point cloud transformed to the Parent frame and published in `/points_calibrated`. 
+1. Child Point cloud transformed to the Parent frame and published in `/points_calibrated`.
 1. Output in the terminal showing the X,Y,Z,Yaw,Pitch,Roll transformation between child and parent. These values can be used later with the `static_transform_publisher`.
 
 
