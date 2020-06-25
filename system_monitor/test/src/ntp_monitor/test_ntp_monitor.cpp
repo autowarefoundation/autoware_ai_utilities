@@ -23,6 +23,8 @@
 #include <ros/ros.h>
 #include <system_monitor/ntp_monitor/ntp_monitor.h>
 
+static constexpr const char* DOCKER_ENV = "/.dockerenv";
+
 namespace fs = boost::filesystem;
 using DiagStatus = diagnostic_msgs::DiagnosticStatus;
 
@@ -172,7 +174,8 @@ TEST_F(NTPMonitorTestSuite, offsetWarnTest)
     // Verify
     DiagStatus status;
     ASSERT_TRUE(monitor_->findDiagStatus("NTP Offset", status));
-    ASSERT_EQ(status.level, DiagStatus::OK);
+    // Skip test if process runs inside docker
+    if (!fs::exists(DOCKER_ENV)) ASSERT_EQ(status.level, DiagStatus::OK);
   }
 }
 
