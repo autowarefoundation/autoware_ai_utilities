@@ -512,6 +512,8 @@ TEST_F(HDDMonitorTestSuite, tempNoSuchDeviceTest)
 TEST_F(HDDMonitorTestSuite, usageWarnTest)
 {
   // Disabled since it depends on the system performing the test.
+  // TODO: Re-enable or re-work test to focus on functionality of code rather
+  // than the system running the test.
 
   // // Verify normal behavior
   // {
@@ -569,6 +571,8 @@ TEST_F(HDDMonitorTestSuite, usageWarnTest)
 TEST_F(HDDMonitorTestSuite, usageErrorTest)
 {
   // Disabled since it depends on the system performing the test.
+  // TODO: Re-enable or re-work test to focus on functionality of code rather
+  // than the system running the test.
 
   // // Verify normal behavior
   // {
