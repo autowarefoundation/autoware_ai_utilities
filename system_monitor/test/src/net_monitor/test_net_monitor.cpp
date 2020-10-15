@@ -115,25 +115,29 @@ TEST_F(NetMonitorTestSuite, usageWarnTest)
     ASSERT_EQ(status.level, DiagStatus::OK);
   }
 
-  // Verify warning
-  {
-    // Change warning level
-    monitor_->changeUsageWarn(0.0);
+  // Disabled since it depends on the system performing the test.
+  // TODO(icolwell): Re-enable or re-work test to focus on functionality of code rather
+  // than the system running the test.
 
-    // Publish topic
-    monitor_->update();
-
-    // Give time to publish
-    ros::WallDuration(0.5).sleep();
-    ros::spinOnce();
-
-    // Verify
-    DiagStatus status;
-    ASSERT_TRUE(monitor_->findDiagStatus("Network Usage", status));
-    // Skip test if process runs inside docker
-    // Don't know what interface should be monitored.
-    if (!fs::exists(DOCKER_ENV)) ASSERT_EQ(status.level, DiagStatus::WARN);
-  }
+  // // Verify warning
+  // {
+  //   // Change warning level
+  //   monitor_->changeUsageWarn(0.0);
+  //
+  //   // Publish topic
+  //   monitor_->update();
+  //
+  //   // Give time to publish
+  //   ros::WallDuration(0.5).sleep();
+  //   ros::spinOnce();
+  //
+  //   // Verify
+  //   DiagStatus status;
+  //   ASSERT_TRUE(monitor_->findDiagStatus("Network Usage", status));
+  //   // Skip test if process runs inside docker
+  //   // Don't know what interface should be monitored.
+  //   if (!fs::exists(DOCKER_ENV)) ASSERT_EQ(status.level, DiagStatus::WARN);
+  // }
 
   // Verify normal behavior
   {
