@@ -509,123 +509,119 @@ TEST_F(HDDMonitorTestSuite, tempNoSuchDeviceTest)
   ASSERT_STREQ(value.c_str(), strerror(ENOENT));
 }
 
-TEST_F(HDDMonitorTestSuite, usageWarnTest)
-{
-  // Disabled since it depends on the system performing the test.
-  // TODO(icolwell): Re-enable or re-work test to focus on functionality of code rather
-  // than the system running the test.
+// Disabled since it depends on the system performing the test.
+// TODO(icolwell): Re-enable or re-work test to focus on functionality of code rather
+// than the system running the test.
 
-  // // Verify normal behavior
-  // {
-  //   // Publish topic
-  //   monitor_->update();
-  //
-  //   // Give time to publish
-  //   ros::WallDuration(0.5).sleep();
-  //   ros::spinOnce();
-  //
-  //   // Verify
-  //   DiagStatus status;
-  //   std::string value;
-  //   ASSERT_TRUE(monitor_->findDiagStatus("HDD Usage", status));
-  //   ASSERT_EQ(status.level, DiagStatus::OK);
-  // }
-
-  // Verify warning
-  {
-    // Change warning level
-    monitor_->changeUsageWarn(0.0);
-
-    // Publish topic
-    monitor_->update();
-
-    // Give time to publish
-    ros::WallDuration(0.5).sleep();
-    ros::spinOnce();
-
-    // Verify
-    DiagStatus status;
-    ASSERT_TRUE(monitor_->findDiagStatus("HDD Usage", status));
-    ASSERT_EQ(status.level, DiagStatus::WARN);
-  }
-
-  // Verify normal behavior
-  {
-    // Change back to normal
-    monitor_->changeUsageWarn(0.95);
-
-    // Publish topic
-    monitor_->update();
-
-    // Give time to publish
-    ros::WallDuration(0.5).sleep();
-    ros::spinOnce();
-
-    // Verify
-    DiagStatus status;
-    ASSERT_TRUE(monitor_->findDiagStatus("HDD Usage", status));
-    ASSERT_EQ(status.level, DiagStatus::OK);
-  }
-}
-
-TEST_F(HDDMonitorTestSuite, usageErrorTest)
-{
-  // Disabled since it depends on the system performing the test.
-  // TODO(icolwell): Re-enable or re-work test to focus on functionality of code rather
-  // than the system running the test.
-
-  // // Verify normal behavior
-  // {
-  //   // Publish topic
-  //   monitor_->update();
-  //
-  //   // Give time to publish
-  //   ros::WallDuration(0.5).sleep();
-  //   ros::spinOnce();
-  //
-  //   // Verify
-  //   DiagStatus status;
-  //   std::string value;
-  //   ASSERT_TRUE(monitor_->findDiagStatus("HDD Usage", status));
-  //   ASSERT_EQ(status.level, DiagStatus::OK);
-  // }
-
-  // Verify warning
-  {
-    // Change warning level
-    monitor_->changeUsageError(0.0);
-
-    // Publish topic
-    monitor_->update();
-
-    // Give time to publish
-    ros::WallDuration(0.5).sleep();
-    ros::spinOnce();
-
-    // Verify
-    DiagStatus status;
-    ASSERT_TRUE(monitor_->findDiagStatus("HDD Usage", status));
-    ASSERT_EQ(status.level, DiagStatus::ERROR);
-  }
-
-  // Verify normal behavior
-  {
-    // Change back to normal
-    monitor_->changeUsageError(0.99);
-
-    // Publish topic
-    monitor_->update();
-
-    // Give time to publish
-    ros::WallDuration(0.5).sleep();
-    ros::spinOnce();
-
-    // Verify
-    DiagStatus status;
-    ASSERT_TRUE(monitor_->findDiagStatus("HDD Usage", status));
-    ASSERT_EQ(status.level, DiagStatus::OK);
-  }
-}
+// TEST_F(HDDMonitorTestSuite, usageWarnTest)
+// {
+//   // Verify normal behavior
+//   {
+//     // Publish topic
+//     monitor_->update();
+//
+//     // Give time to publish
+//     ros::WallDuration(0.5).sleep();
+//     ros::spinOnce();
+//
+//     // Verify
+//     DiagStatus status;
+//     std::string value;
+//     ASSERT_TRUE(monitor_->findDiagStatus("HDD Usage", status));
+//     ASSERT_EQ(status.level, DiagStatus::OK);
+//   }
+//
+//   // Verify warning
+//   {
+//     // Change warning level
+//     monitor_->changeUsageWarn(0.0);
+//
+//     // Publish topic
+//     monitor_->update();
+//
+//     // Give time to publish
+//     ros::WallDuration(0.5).sleep();
+//     ros::spinOnce();
+//
+//     // Verify
+//     DiagStatus status;
+//     ASSERT_TRUE(monitor_->findDiagStatus("HDD Usage", status));
+//     ASSERT_EQ(status.level, DiagStatus::WARN);
+//   }
+//
+//   // Verify normal behavior
+//   {
+//     // Change back to normal
+//     monitor_->changeUsageWarn(0.95);
+//
+//     // Publish topic
+//     monitor_->update();
+//
+//     // Give time to publish
+//     ros::WallDuration(0.5).sleep();
+//     ros::spinOnce();
+//
+//     // Verify
+//     DiagStatus status;
+//     ASSERT_TRUE(monitor_->findDiagStatus("HDD Usage", status));
+//     ASSERT_EQ(status.level, DiagStatus::OK);
+//   }
+// }
+//
+// TEST_F(HDDMonitorTestSuite, usageErrorTest)
+// {
+//   // Verify normal behavior
+//   {
+//     // Publish topic
+//     monitor_->update();
+//
+//     // Give time to publish
+//     ros::WallDuration(0.5).sleep();
+//     ros::spinOnce();
+//
+//     // Verify
+//     DiagStatus status;
+//     std::string value;
+//     ASSERT_TRUE(monitor_->findDiagStatus("HDD Usage", status));
+//     ASSERT_EQ(status.level, DiagStatus::OK);
+//   }
+//
+//   // Verify warning
+//   {
+//     // Change warning level
+//     monitor_->changeUsageError(0.0);
+//
+//     // Publish topic
+//     monitor_->update();
+//
+//     // Give time to publish
+//     ros::WallDuration(0.5).sleep();
+//     ros::spinOnce();
+//
+//     // Verify
+//     DiagStatus status;
+//     ASSERT_TRUE(monitor_->findDiagStatus("HDD Usage", status));
+//     ASSERT_EQ(status.level, DiagStatus::ERROR);
+//   }
+//
+//   // Verify normal behavior
+//   {
+//     // Change back to normal
+//     monitor_->changeUsageError(0.99);
+//
+//     // Publish topic
+//     monitor_->update();
+//
+//     // Give time to publish
+//     ros::WallDuration(0.5).sleep();
+//     ros::spinOnce();
+//
+//     // Verify
+//     DiagStatus status;
+//     ASSERT_TRUE(monitor_->findDiagStatus("HDD Usage", status));
+//     ASSERT_EQ(status.level, DiagStatus::OK);
+//   }
+// }
 
 TEST_F(HDDMonitorTestSuite, usageDfErrorTest)
 {
