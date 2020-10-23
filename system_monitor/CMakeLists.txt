@@ -211,7 +211,7 @@ install(DIRECTORY config/
 if (CATKIN_ENABLE_TESTING)
   roslint_add_test()
   find_package(rostest REQUIRED)
-  
+
   add_rostest_gtest(test_cpu_monitor
     test/test_cpu_monitor.test
     test/src/cpu_monitor/test_${CMAKE_CPU_PLATFORM}_cpu_monitor.cpp
@@ -219,12 +219,15 @@ if (CATKIN_ENABLE_TESTING)
   )
   target_link_libraries(test_cpu_monitor ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
-  add_rostest_gtest(test_hdd_monitor
-    test/test_hdd_monitor.test
-    test/src/hdd_monitor/test_hdd_monitor.cpp
-    src/hdd_monitor/hdd_monitor.cpp
-  )
-  target_link_libraries(test_hdd_monitor ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+  # Disabled since it depends on the system performing the test.
+  # TODO(icolwell): Re-enable or re-work test to focus on functionality of code rather
+  # than the system running the test.
+  # add_rostest_gtest(test_hdd_monitor
+  #   test/test_hdd_monitor.test
+  #   test/src/hdd_monitor/test_hdd_monitor.cpp
+  #   src/hdd_monitor/hdd_monitor.cpp
+  # )
+  # target_link_libraries(test_hdd_monitor ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
   add_rostest_gtest(test_mem_monitor
     test/test_mem_monitor.test
@@ -274,7 +277,7 @@ if (CATKIN_ENABLE_TESTING)
   add_executable(echo1 test/src/process_monitor/sort1.cpp)
   add_executable(sort1 test/src/process_monitor/sort1.cpp)
   add_executable(sed1 test/src/process_monitor/sed1.cpp)
-  
+
   install(TARGETS mpstat1 RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
   install(TARGETS mpstat2 RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
   install(TARGETS df1 RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
