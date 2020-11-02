@@ -5,11 +5,14 @@ find_package(autoware_build_flags REQUIRED)
 find_package(catkin REQUIRED COMPONENTS
   autoware_msgs
   cv_bridge
+  geometry_msgs
   image_transport
   roscpp
   sensor_msgs
   std_msgs
-  tf
+  tf2
+  tf2_geometry_msgs
+  tf2_ros
 )
 
 find_package(OpenCV REQUIRED)
