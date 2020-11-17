@@ -7,16 +7,12 @@ args:
 - {name: velocity_min, type: real, default: 4.0}
 - {name: accel_limit, type: real, default: 0.5}
 - {name: decel_limit, type: real, default: 0.3}
-- {name: radius_thresh, type: real, default: 20.0}
+- {name: lateral_accel_limit, type: real, default: 2.0}
 - {name: radius_min, type: real, default: 6.0}
 - {name: resample_mode, type: bool, default: true}
 - {name: resample_interval, type: real, default: 1.0}
-- {name: velocity_offset, type: int, default: 4}
-- {name: end_point_offset, type: int, default: 1}
-- {name: braking_distance, type: int, default: 5}
 - {name: replan_curve_mode, type: bool, default: false}
 - {name: replan_endpoint_mode, type: bool, default: true}
-- {name: overwrite_vmax_mode, type: bool, default: false}
 - {name: realtime_tuning_mode, type: bool, default: false}
 
 panel:
@@ -29,14 +25,10 @@ panel:
   - {target: args.velocity_min, widget: basic.real}
   - {target: args.accel_limit, widget: basic.real}
   - {target: args.decel_limit, widget: basic.real}
-  - {target: args.radius_thresh, widget: basic.real}
+  - {target: args.lateral_accel_limit, widget: basic.real}
   - {target: args.radius_min, widget: basic.real}
   - {target: args.resample_mode, widget: basic.bool}
   - {target: args.resample_interval, widget: basic.real}
-  - {target: args.velocity_offset, widget: basic.int}
-  - {target: args.end_point_offset, widget: basic.int}
-  - {target: args.braking_distance, widget: basic.int}
   - {target: args.replan_curve_mode, widget: basic.bool}
   - {target: args.replan_endpoint_mode, widget: basic.bool}
-  - {target: args.overwrite_vmax_mode, widget: basic.bool}
   - {target: args.realtime_tuning_mode, widget: basic.bool}
