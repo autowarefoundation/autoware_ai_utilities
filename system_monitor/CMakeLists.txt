@@ -9,6 +9,7 @@ add_compile_options(-std=c++14)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   diagnostic_msgs
+  diagnostic_updater
   roslint
   roscpp
   std_msgs
@@ -24,7 +25,11 @@ roslint_cpp()
 ## catkin specific configuration ##
 ###################################
 catkin_package(
-  CATKIN_DEPENDS std_msgs
+  CATKIN_DEPENDS
+    diagnostic_msgs
+    diagnostic_updater
+    roscpp
+    std_msgs
 )
 
 ###########

@@ -10,6 +10,7 @@
   <buildtool_depend>catkin</buildtool_depend>
   <test_depend>rostest</test_depend>
   <depend>diagnostic_msgs</depend>
+  <depend>diagnostic_updater</depend>
   <depend>roscpp</depend>
   <depend>roslint</depend>
   <depend>std_msgs</depend>
